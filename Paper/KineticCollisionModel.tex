@@ -1,0 +1,686 @@
+\documentclass[10pt,conference]{IEEEtran}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{graphicx}
+
+%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+\begin{document}
+
+\title{Modeling Avian-Turbine Collisions: An Angle Independent Extension to the Tucker Model}
+\author{Lars Holmstrom, Hamer Environmental L.P.}
+\maketitle
+
+%==============================================================================
+%Abstract
+%==============================================================================
+\begin{abstract}
+A mathematical model is described which can estimate the probability of a collision between a bird passing through a
+wind turbine and one of the rotors of the turbine. The model improves upon the often used ``Tucker Model" in that it
+accounts for different angles of approach other than perpendicular or parallel to the rotor plane. The model makes a
+number of assumptions for the sake of analytic simplicity, most notably the exclusion of any behavioral interaction
+between the bird and the turbine. It is useful, however, as a building block for more comprehensive models which may
+account for these behavioral effects and the interactions of multiple turbines in wind farms.
+\end{abstract}
+
+%==============================================================================
+\section{Introduction}
+%==============================================================================
+Wind power is quickly becoming an attractive renewable energy source across the globe due its minimal emissions
+production amid the rising awareness of global warming. Wind power is not, however, without environmental impact. It
+has been shown that wind turbines pose a threat to bird populations resulting from direct collisions with the rotor
+blades or turbine towers \cite{Johnson2002}\cite{Johnson2004}. This effect has been documented for numerous
+installations, including the Altamont Pass Wind Resource Area (APWRA), where it is estimated that somewhat more than
+1,000 birds are being killed annually by about 5,000 wind turbines \cite{Thalender2003}. While this is an atypically
+high mortality rate resulting from the local geology, weather, and behavior of the birds, it has nonetheless made it
+clear that wind farms may have a significant impact on bird populations.
+
+Due to the potential danger to endangered and/or protected bird species and the knowledge that the location of the
+turbines with respect to these populations plays an important role in the resulting mortality rate, it has become
+common to assess the impact of proposed wind farms on local and migratory bird populations before they are even built.
+While other factors such as species and resource displacement may also result from wind farm construction, a key
+component of the impact assessment is an estimation of the annual bird mortality rate resulting directly from rotor and
+tower collisions.
+
+This paper discusses a model based approach to this estimation problem. The inputs into the model are based on the
+characteristics of the wind turbine along with information about wind conditions and the flight paths taken by the
+birds. The output is an estimated probability of collision for a specified flight path based upon the kinetics of the
+moving bird and the rotating wind turbine. This paper will focus on the interaction between a single bird and turbine.
+This result can be extrapolated to estimate collision probabilities for populations of birds flying across wind farms.
+
+The model described in this paper is not revolutionary in that it proposes a new way to approach the mortality
+estimation problem. In fact, it is based on the collision model proposed by V. A. Tucker in his 1996 paper ``A
+Mathematical Model of Bird Collisions With Wind Turbine Rotors" \cite{Tucker1996}. This model has become the basis for
+a number of other models which address the larger problem of mortality estimation for an entire wind farm
+\cite{Cooper2004}\cite{Madders2006}. Where \cite{Tucker1996} provides solutions for the cases where the bird's air
+velocity is either parallel or perpendicular to the plane of the turbine rotors, the model described in this paper
+solves the more general case of oblique approach angles. This is an important improvement, since birds often follow
+flight paths that are not based on the wind direction, but rather on geologic features such as `inland' or along a
+coastline.
+
+%==============================================================================
+\section{Methods}
+%==============================================================================
+\subsection{Model Assumptions/Simplifications}
+In order to simplify the analysis of the problem, a number of assumptions have been made in the design of the model.
+Most of these have been inherited directly from the Tucker model, but the most significant of these warrant discussion.
+While some of these simplifications limit the generality and accuracy of the model, they can be justified in that they
+make the derivation and implementation of the model more tractable.
+
+One of the assumptions shared by both the Tucker and the present model is that birds have a straight flight path which
+is parallel to the ground. Since birds engaged in other behaviors such as foraging and hunting often use erratic or
+circular flight patterns which vary in altitude \cite{Thalender2003}, the model will have to be further adapted to
+apply to these situations. This extension is beyond the scope of this paper.
+
+Another simplification shared by both models is the decision to model a flying bird as a two dimensional rectangle
+representing the wingspan and length of the bird. Clearly, a bird has girth as well, may be flapping its wings while
+traversing the plane of the turbine, and is often more of a ``T" shape than a rectangle when viewed from above. This
+decision was made to simplify the mathematical analysis of the problem and to reduce the description of the bird's
+physical shape down to two parameters. These simplifications, as opposed to a more complete description of the physical
+dimensions of a bird in flight, can be shown to have only a small effect on the outcome of the model.
+
+The third and most profound assumption in the current model is that there are no behavioral interactions between the
+birds and the turbine. Since bird species have been shown to avoid turbines and wind farms
+\cite{Kahlert2003}\cite{Chamberlain2006}, this simplification will clearly bias the model towards over-estimating the
+collision probabilities. The Tucker model makes an attempt to address this interaction by defining a rotor speed,
+$v_\circ$, below which a bird can avoid the moving rotor. While the motivation behind this addition to the model is
+sound, it is not clear how $v_\circ$ should be estimated for different bird species. Furthermore, it is clearly not a
+complete or accurate description of the behavioral interaction in question, since there is evidence that birds hit the
+non-moving components of the wind turbine, including the tower. Since these behavioral interactions are incompletely
+addressed in the Tucker model, the model proposed in this paper does not include them. What the model instead provides
+is an upper bound on the collision probabilities when a straight flight path and no behavioral interaction is assumed.
+Behavioral corrections to the outputs of this model are also beyond the scope of this paper.
+
+Finally, the last significant assumption that this model makes concerns the collision probabilities that are calculated
+when a three-dimensional rotor blade is considered (one that has a chord length and twist angle along its length).
+Similar to the Tucker model, the chord length and pitch is assumed to be constant in the region where the bird passes
+through the rotor plane. In this model, the chord and pitch that are used are calculated from the rotor position
+where the nose of the bird passes through rotor plane, even though the bird may drift to the right or left depending
+on the angle of flight relative to this point of entry. This simplification can be shown to have an insignificant
+affect on the outcome and greatly simplifies the collision analysis when a three-dimensional rotor is considered.
+
+\subsection{Model Parameters}
+\begin{table}
+  \centering
+%  \textbf{User Specified Model Parameters}\\
+  \vspace{1 mm}
+  \begin{tabular}{|ll|}
+  \hline
+  \textbf{Bird Parameters} &\\
+  $w$ & Wing Span (m)\\
+  $l$ & Length of Bird (m)\\
+  $V_b$ & Bird's Air Speed (m/s)\\
+  $\phi$ & Angle of Approach (degrees)\\
+  \hline
+  \textbf{Turbine Parameters} & \\
+  $N$ & Number of Rotors\\
+  $R$ & Radius of Turbine (m)\\
+  $r$ & Radius of Hub (m)\\
+  $\Omega$ & Angular Velocity (rpms)\\
+%  $f(c)$ & Chord Length Function (m)\\
+%  $f(\beta)$ & Chord Angle Function (degrees)\\
+  \hline
+  \textbf{Wind Parameters} &\\
+  $V_w$ & Velocity\\
+  $a$ & Axial Induction Factor\\
+  \hline
+  \end{tabular}
+  \caption{User Specified Model Parameters}
+  \label{table.user_parameters}
+\end{table}
+
+
+Each application of the model will correspond with a turbine design and a bird species under consideration. In
+addition, the results of field surveys will provide critical site dependent information about the wind conditions and
+the bird's local flight paths. Table \ref{table.user_parameters} lists the user specified model parameters and their
+definitions. The angle of approach describes the bird's rotational orientation with respect to downwind ($0^\circ$).
+Rotation to the left results in negative angles and rotation to the right results in positive angles. This is not
+generally equal to the angle that the bird's flight path intersects the rotor plane, since flight direction is
+dependent on both the bird and wind velocity. See Fig. \ref{fig.Plus85} for an example. In this figure, the red lines
+indicating the flight path of the bird are clearly not parallel to the angle of approach of the bird. The axial
+induction, $a$, accounts for the fact that air flowing through the disk has a speed less than the wind speed
+\cite{Wilson1994}.
+The chord length function and the chord angle function describe the rotor chord length and twist angle as a function of
+the radius of the rotor.
+
+For the purposes of comparison, the chord functions described in the Tucker Model are used in the results published in
+this paper. Table \ref{ChordFunctions} defines these functions and Fig. \ref{fig.ChordCharacteristics} shows plots of
+these functions.
+\begin{table}
+  \centering
+  \textbf{Chord Length (c) and Angle ($\beta$) Functions}\\
+    \begin{tabular}{|lllll|}
+  \hline
+    % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+    $c$ & $=$ & $0$ & for & $r/R< 0.1$ \\
+    $c$ & $=$ & $0.115R$ && $0.1 < r/R < 0.25$ \\
+    $c$ & $=$ & $0.168R-0.240r+0.1r^2/R$ && $0.25 \leq r/R < 1$ \\
+    &&&&\\
+    \multicolumn{5}{|l|}{$\beta = 0.640 \arctan(8(r/R-0.015))^{-1}-0.073$}\\
+  \hline
+    \end{tabular}
+  \caption{This is a table}\label{ChordFunctions}
+\end{table}
+
+\begin{figure}
+   \centering
+   \includegraphics[width=1.0\columnwidth]{ChordCharacteristics}
+   \caption{}
+   \label{fig.ChordCharacteristics}
+\end{figure}
+
+\subsection{General Algorithm For Calculating Collision Probabilities}
+When considering a linear bird flight path through the rotor plane, a straightforward algorithm can be used to
+calculate the probability of a collision with one of the rotor blades:
+\begin{enumerate}
+  \item As a bird passesthrough the rotor plane for a given flight path, calculate the full range of angles the turbine rotors can take on that will result in a collision with the bird.
+  \item Divide this composite range by 360 degrees to generate a probability of collision with one of the rotors.
+\end{enumerate}
+While this general algorithm is simple, the calculation of the rotor ranges can be complicated.
+
+\begin{figure}[h!]
+   \centering
+   \includegraphics[width=1.0\columnwidth]{DeadOn}
+   \caption{\textbf{Top Pane:} A bird at the instant it enters the rotor plane for an approach angle of $0^\circ$ (dead-on). The bird's air velocity $V_b$ is 5
+m/s, the wind velocity $V_w$ is 10 m/s, and the other model parameters are as specified in Table
+\ref{table.example_parameters}. The green circle indicates the position of the rotor that will collide with corner 2 of
+the bird at the instant the bird passes through the rotor plane. The black circle indicates the position of the rotor
+that will collide with corner 4 as the bird exits the rotor plane. \textbf{Middle Pane:} A view of the area swept out
+by the turbine rotors looking downwind as the bird enters the rotor plane. \textbf{Bottom Pane:} A view of the top
+right quadrant of the area swept out by the turbine rotors indicating the variables used in the discussion of the
+model.}
+   \label{fig.DeadOn}
+   \end{figure}
+
+\begin{figure}
+   \centering
+   \includegraphics[width=1.0\columnwidth]{DeadOnTurbine}
+   \caption{Probability contours for a downwind flight path where the bird's air velocity $V_b$ is 5
+m/s, the wind velocity $V_w$ is 10 m/s, and the other model parameters are as specified in Table
+\ref{table.example_parameters}}
+   \label{fig.DeadOnTurbine}
+   \end{figure}
+
+\begin{figure}
+   \centering
+   \includegraphics[width=1.0\columnwidth]{DeadOnTurbineUpwind}
+   \caption{Probability contours for an upwind flight path where the bird's air velocity $V_b$ is -10
+m/s, the wind velocity $V_w$ is 5 m/s, and the other model parameters are as specified in Table
+\ref{table.example_parameters}}
+   \label{fig.DeadOnTurbineUpwind}
+   \end{figure}
+
+\subsection{Analysis of Downwind and Upwind Flight Path with 1D Rotor}
+This is the most basic scenario to analyze and provides a good opportunity for an introduction into the collision
+probability calculations described in this paper. The middle pane of Fig. \ref{fig.DeadOn} depicts a wind turbine as it
+appears looking downwind. The plane of the rotor blades is perpendicular to the wind direction, as is the case in
+normal operation. The origin of a left-handed 3 dimensional (xyz) coordinate space is located at the center of the
+turbine hub. The z-component increases in the up direction, the y-component increases to the right, and the x-component
+increases downwind and is negative at the figure viewpoint. The turbine blades rotate counter clockwise when looking
+downwind. The horizontal blue bar depicts the position of the bird as it enters the rotor plane. Since the flight path
+is parallel to the wind direction, the $x$ and $y$ components of the bird's groundspeed are given by
+\begin{equation*}
+    V_{bx} = V_b +(1-a)U
+\end{equation*}
+and
+\begin{equation*}
+    V_{by} = 0
+\end{equation*}
+
+
+\subsubsection{Calculating Collision Points}
+The top pane of the figure is a top-down view of the bird at the instant it enters the rotor plane. The green circle
+indicates the most advanced position of the rotor on the y-axis that can produce a collision with the bird, $y_+$. The
+earliest collision at this point takes place as soon as the bird enters the rotor plane as corner 2 of the bird clips
+the rotor as it is rotating away to the left. The black circle indicates the least advanced position of the rotor on
+the y-axis that can produce a collision with the bird, $y_-$. The latest collision at this point takes place as soon as
+the bird exits the rotor plane as the rotor clips corner 4 of the bird. In the case of downwind flight (flight path
+perpendicular to the rotor plane), the y-components of the rotor positions corresponding to these two points are given
+by:
+\begin{equation*}\label{DeadOnLeft}
+    y_{+} = y_{\text{nose}} - w/2
+\end{equation*}
+and
+\begin{equation*}\label{DeadOnRight}
+    y_{-} = y_{\text{nose}} + w/2
+\end{equation*}
+where $y_{\text{nose}}$ is the y coordinate of where the nose of the bird crosses the rotor plane (at 5m in Fig.
+\ref{fig.DeadOn}), and $w$ is the width of the bird (1m in Fig. \ref{fig.DeadOn}).
+
+\subsubsection{Rotor Angle Resulting in Collision}
+The lower pane of Fig. \ref{fig.DeadOn} shows view of the top right quadrant of the area swept out by the turbine
+rotors indicating the variables used in the following discussion of the model. Rotor rotational angles, $\theta_+$ and
+$\theta_-$, can be calculated which correspond to the collision points $y_+$ and $y_-$. These angles are given by:
+\begin{equation*}
+    \theta_+ = \arctan(z/y_+)
+\end{equation*}
+and
+\begin{equation*}
+    \theta_- = \arctan(z/y_-)
+\end{equation*}
+The time it takes corner 4 of the bird to intersect the rotor plane is given by $l/V_{bx}$, where $l$ is the length of
+the bird. The rotor can rotate $(l/V_{bx})\Omega$ degrees in this period of time. We can therefore calculate the
+initial angle of the rotor which will clip corner 4 upon the bird's exit from the rotor plane:
+\begin{equation*}
+    \theta_x = \theta_- - (l/V_{bx})\Omega
+\end{equation*}
+The complete range of rotor angles, $\theta_r$, that would result in a collision as the bird passes through the turbine
+plane is given by:
+\begin{eqnarray}
+\nonumber    \theta_r &=& \theta_+ - \theta_x\\
+             &=& \arctan(z/y_+) - \arctan(z/y_-) + (l/V_{bx})\Omega
+\end{eqnarray}
+These results agree with those described in \cite{Tucker1996} where $\arctan(z/y_+) - \arctan(z/y_-)$ is equal to
+$(\Delta\Psi)_s$ and $(l/V_{bx})\Omega$ is equal to $(\Delta\Psi)_x$. A slightly different approach has been taken in
+this analysis to aid the calculation of the collision probabilities for oblique angles of approach.
+
+\begin{table}
+  \centering
+  \label{table.example_parameters}
+%  \textbf{Model Parameter Values Used In Examples}\\
+  \vspace{1 mm}
+  \begin{tabular}{|ll|}
+  \hline
+  \textbf{Bird Parameters} &\\
+  $w$ & 1 m\\
+  $l$ & 0.5 m\\
+  $V_b$ & variable\\
+  $\phi$ & variable\\
+  \hline
+  \textbf{Turbine Parameters} & \\
+  $N$ & 3 rotors\\
+  $R$ & 10 m\\
+  $r$ & 0.5 m\\
+  $\Omega$ & 72 rpms\\
+%  $f(c)$ & Chord Length Function (m)\\
+%  $f(\beta)$ & Chord Angle Function (degrees)\\
+  \hline
+  \textbf{Wind Parameters} &\\
+  $V_w$ & variable\\
+  $a$ & 0.25\\
+  \hline
+  \end{tabular}
+  \caption{Model Parameter Values Used In Examples}
+\end{table}
+
+\subsubsection{Collision Probability Calculation}
+Provided the bird, turbine, and wind characteristics (see Table \ref{table.user_parameters}), and a point $(0,y,z)$
+where the nose of the bird intersects the rotor plane, we can calculate the probability of a collision given a downwind
+flight path and a 1 dimensional rotor:
+\begin{eqnarray}\label{DownwindProbability}
+    \nonumber P(y,z) &=& \frac{360^\circ}{N\theta_r}\\
+    &=& \frac{360^\circ}{N(\theta_+ - \theta_- + (l/V_{bx})\Omega)}\\
+    \nonumber &=& \frac{360^\circ}{N(\arctan(z/y_+) - \arctan(z/y_-) + (l/V_{bx})\Omega)}
+\end{eqnarray}
+
+Fig. \ref{fig.DeadOnTurbine} shows the resulting turbine probability contours where the bird's air velocity $V_b$ is 5
+m/s, the wind velocity $V_w$ is 10 m/s, and the other model parameters are as specified in Table
+\ref{table.example_parameters}.
+
+\subsubsection{Upwind Flight Path Analysis}
+The analysis of upwind flight is identical to the downwind flight path analysis except that the sign of the bird
+velocity parameter $V_b$ is negative instead of positive. When added to the wind velocity (which is always
+perpendicular to the rotor plane) and after accounting for $a$, the axial induction factor, this generally results in a
+reduced ground velocity for the bird which increases the chance of collision with a rotor.
+
+Fig. \ref{fig.DeadOnTurbineUpwind} shows the resulting probability contours where the bird's air velocity $V_b$ is -10
+m/s, the wind velocity $V_w$ is 5 m/s, and the other model parameters are as specified in Table
+\ref{table.example_parameters}.
+
+\section{Analysis of Oblique Flight Path with 1D Rotor}
+This analysis includes all angles of approach that the bird may take towards the wind turbine -- not just directly
+downwind or upwind as the Tucker model addresses. Oblique angles of approach require additional care in the calculation
+of the first and last possible collision points between the bird and the rotor. This paper will cover the 4 different
+collision scenarios based on different angles of approach. For each of these examples, the bird's air velocity $V_b$ is
+5 m/s, the wind velocity $V_w$ is 10 m/s, the point where the bird's nose intersects the rotor plane is $(x,y,z) =
+(0,5\text{m},5\text{m})$, and the other model parameters are as specified in Table \ref{table.example_parameters}.
+Since the bird is no longer traveling parallel to the wind (and perpendicular to the rotor plane), there are now $x$
+and $y$ components of the bird's velocity, $V_{bx}$ and $V_{by}$. These are given by
+\begin{equation*}
+    V_{bx} = V_b cos(\phi)+(1-a)U
+\end{equation*}
+and
+\begin{equation*}
+    V_{by} = V_b sin(\phi)
+\end{equation*}
+
+
+\begin{figure}
+   \centering
+   \includegraphics[width=1.0\columnwidth]{Minus7}
+   \caption{\textbf{Leading Edge Collision.} A bird at the instant it enters the rotor plane for an approach angle of $-7^\circ$. The bird's air velocity $V_b$ is 5
+m/s, the wind velocity $V_w$ is 10 m/s, and the other model parameters are as specified in Table
+\ref{table.example_parameters}. The green circle indicates the position of the rotor at this instant that will clip
+corner 2 of the bird as the bird passes through the rotor plane. Any rotor position between this point at the corner 1
+of the bird will result in a leading edge collision. The black circle indicates the position of the rotor that will
+clip corner 4 of the bird as it passes through the rotor plane. This is the last point the bird can collide with the
+rotor since no trailing edge collision is possible in this case.}
+   \label{fig.Minus7}
+   \end{figure}
+
+
+\begin{figure}
+   \centering
+   \includegraphics[width=1.0\columnwidth]{Minus15}
+   \caption{\textbf{Trailing Edge Collision.} A bird at the instant it enters the rotor plane for an approach angle of $-15^\circ$. The bird's air velocity $V_b$ is 5
+m/s, the wind velocity $V_w$ is 10 m/s, and the other model parameters are as specified in Table
+\ref{table.example_parameters}. The green circle indicates the position of the rotor that will collide with corner 1 of
+the bird at the instant the bird passes through the rotor plane. No leading edge collision is possible in this case.
+The black circle indicates the position of the rotor that will clip corner 3 of the bird as it passes through the rotor
+plane. This is the last point the bird can collide the rotor since a trailing edge collision is possible in this case.}
+   \label{fig.Minus15}
+   \end{figure}
+
+\subsection{Approach Angle in Direction of Turbine Rotation}
+In this case, the bird approaches the rotor plane with an approach angle in the direction of the rotor rotation. For
+downwind flight paths, this is true for negative angles of approach in the top half of the area swept by the rotors
+($z>0$) and positive angles of approach in the bottom half ($z<0$). For upwind flight paths, this is true for for
+positive angles of approach in the top half and negative angles in the bottom. Fig. \ref{fig.Minus7} and Fig.
+\ref{fig.Minus15} show visualizations of the $z>0$, $\phi<0$ case where the angles of approach are $-7^\circ$ and
+$-15^\circ$ and the other parameters are as stated above for the oblique approach angle examples. In these figures,
+corner 1 is the first point of contact of the bird with the rotor plane. Looking down from above, the turbine is
+rotating to the left. The time at which corner 1 intercepts the plane, $t_1$, is considered to be zero. The time at
+which the nose and the other corners intercept the rotor plane are given by
+\begin{eqnarray*}
+    t_{nose} &=& \frac{-w \cdot sin(\phi)}{2 V_{bx}}\\
+    t_1 &=& 0\\
+    t_2 &=& \frac{-w \cdot sin(\phi)}{V_{bx}}\\
+    t_3 &=& t_2 + \frac{l \cdot cos(\phi)}{V_{bx}}\\
+    t_4 &=& \frac{l \cdot cos(\phi)}{V_{bx}}
+\end{eqnarray*}
+and the y coordinates of these intercepts are given by
+\begin{eqnarray*}
+    y_1 &=& y_{nose}+\frac{w \cdot cos(\phi)}{2}-t_{nose}V_{by}\\
+    y_2 &=& y_{nose}+\frac{w \cdot cos(\phi)}{2}+(t_2-t_{nose})V_{by}\\
+    y_3 &=& y_2-l \cdot sin(\phi) + (t_3-t_2)V_{by}\\
+    y_4 &=& y_1-l \cdot sin(\phi) + t_4V_{by}
+\end{eqnarray*}
+The time required for the rotor to travel from $y_1$ to $y_2$ is given by
+\begin{equation*}
+    t_r = \frac{1}{\Omega}(\arctan(y_2/z)-\arctan(y_1/z))
+\end{equation*}
+Two cases must be considered to determine the types of collisions possible: $t_r>t_2$ and $t_r<t_2$. These two
+scenarios may lead to leading edge ($\overline{12}$) and trailing edge ($\overline{34}$) collisions, respectively.
+Right edge ($\overline{14}$) collisions are possible and left edge ($\overline{23}$) collisions are impossible in both
+cases.
+
+\subsubsection{Leading Edge Collisions}
+For the set of parameters used in Fig \ref{fig.Minus7}, even if the rotor is to the left of corner 1 as the bird enters
+the rotor plane, it is possible for the leading edge of the bird ($\overline{12}$) to overtake the rotor, resulting in
+a collision. Since $t_r>t_2$, the rotor is traveling to the left at a slower velocity than the leading edge of the bird
+is sweeping through the rotor plane. The green circle indicates the initial position of the rotor (at $t=0$) that will
+clip corner 2 of the bird as the bird passes through the rotor plane. This point is given by
+\begin{equation}
+    y_+ = \tan(\arctan(y_2/z)+t_2\Omega)z
+\end{equation}
+The rotational angle associated with the green circle is $\theta_+$ (see bottom pane of Fig. \ref{fig.DeadOn}) and is
+given by
+\begin{equation}
+    \theta_+ = \arctan\left(\frac{z}{\tan(\arctan(y_2/z)+t_2\Omega)z}\right)
+\end{equation}
+
+Since the trailing edge of the bird ($\overline{34}$) also sweeps through the rotor plane faster than the rotor to the
+left, it is impossible for the rotor to clip corner 3 of the bird. Therefore, the last possible collision with the bird
+occurs at the position of the black circle as corner 4 passes through the rotor plane. This point is given by
+\begin{eqnarray}
+    \nonumber y_- &=& y_4\\
+    &=& y_1-l \cdot sin(\phi) + t_4V_{by}
+\end{eqnarray}
+The rotation angle associated with $y_-$ is $\theta_-$ (see bottom pane of Fig. \ref{fig.DeadOn}) and is given by
+\begin{equation}
+    \theta_- = \arctan\left(\frac{z}{y_1-l \cdot sin(\phi) + t_4V_{by}}\right)
+\end{equation}
+The collision probability can then be calculated using (\ref{DownwindProbability}).
+
+The same analysis applies for $z<0$, $\phi>0$ in downwind flight and $z>0$, $\phi>0$ in upwind flight except the corner
+definitions must be swapped to account for the positive angle of approach where corner 2 is the first to intercept the
+rotor plane.
+
+\subsubsection{Trailing Edge Collisions} For the set of parameters used in Fig \ref{fig.Minus15}, the increased (in magnitude) angle of
+approach decreases the speed at which the leading edge of the bird ($\overline{12}$) sweeps through the rotor plane,
+such that the rotor takes less time to travel the horizontal distance swept by this leading edge ($t_r<t_2$). This
+makes it impossible for a collision to occur between the rotor and the leading edge of the bird. The green circle
+indicates the most advanced position of the rotor as the bird enters the rotor plane that will result in a collision.
+This collision will occur with corner 1 of the bird at the instant the bird enters the rotor plane. The point is given
+by
+\begin{eqnarray}
+    \nonumber y_+ &=& y_1\\
+    &=& y_{nose}+\frac{w \cdot cos(\phi)}{2}-t_{nose}V_{by}
+\end{eqnarray}
+The rotational angle associated with the green circle is $\theta_+$ (see Fig. \ref{fig.DeadOn}) and is given by
+\begin{equation}
+    \theta_+ = \arctan\left(\frac{z}{y_{nose}+\frac{w \cdot cos(\phi)}{2}-t_{nose}V_{by}}\right)
+\end{equation}
+
+Since the trailing edge of the bird ($\overline{34}$) also sweeps to the left through the rotor plane slower than the
+rotor, it is possible for the rotor to clip corner 3 of the bird. Therefore, the last possible collision with the bird
+occurs at the position of the black circle as corner 4 passes through the rotor plane. This point is given by
+\begin{eqnarray}
+    \nonumber y_- &=& y_3\\
+    &=& y_2-l \cdot sin(\phi) + (t_3-t_2)V_{by}
+\end{eqnarray}
+The rotation angle associated with $y_-$ is $\theta_-$ (see bottom pane of Fig. \ref{fig.DeadOn}) and is given by
+\begin{equation}
+    \theta_- = \arctan\left(\frac{z}{y_2-l \cdot sin(\phi) + (t_3-t_2)V_{by}}\right)
+\end{equation}
+The collision probability can then be calculated using (\ref{DownwindProbability}).
+
+The same analysis applies for $z<0$, $\phi>0$ in downwind flight and $z>0$, $\phi>0$ in upwind flight except the corner
+definitions must be swapped to account for the positive angle of approach where corner 2 is the first to intercept the
+rotor plane.
+
+
+\begin{figure}
+   \centering
+   \includegraphics[width=1.0\columnwidth]{Plus15}
+   \caption{\textbf{Right Edge Collision.} A bird at the instant it enters the rotor plane for an approach angle of $15^\circ$. The bird's air velocity $V_b$ is 5
+m/s, the wind velocity $V_w$ is 10 m/s, and the other model parameters are as specified in Table
+\ref{table.example_parameters}. The green circle indicates the position of the rotor that will collide with corner 2 of
+the bird at the instant the bird passes through the rotor plane. No left edge collision is possible in this case. The
+black circle indicates the position of the rotor that will clip corner 4 of the bird as it passes through the rotor
+plane. This is the last point the bird can collide the rotor since a right edge collision is possible in this case.}
+   \label{fig.Plus15}
+   \end{figure}
+
+
+\begin{figure}
+   \centering
+   \includegraphics[width=1.0\columnwidth]{Plus85}
+   \caption{\textbf{Left Edge Collision.} A bird at the instant it enters the rotor plane for an approach angle of $85^\circ$. The bird's air velocity $V_b$ is 5
+m/s, the wind velocity $V_w$ is 10 m/s, and the other model parameters are as specified in Table
+\ref{table.example_parameters}. The green circle indicates the position of the rotor at this instant that will clip
+corner 3 of the bird as the bird passes through the rotor plane. Any rotor position between this point at the corner 2
+of the bird will result in a left edge collision. The black circle indicates the position of the rotor that will clip
+corner 1 of the bird as it passes through the rotor plane. This is the last point the bird can collide with the rotor
+since no right edge collision is possible in this case.}
+   \label{fig.Plus85}
+   \end{figure}
+
+\subsection{Approach Angle in Opposite Direction of Turbine Rotation}
+In this case, the bird approaches the rotor plane with an approach angle in the opposite direction of the rotor
+rotation. For downwind flight paths, this is true for positive angles of approach in the top half of the area swept by
+the rotors ($z>0$) and negative angles of approach in the bottom half ($z<0$). For upwind flight paths, this is true
+for for negative angles of approach in the top half and positive angles in the bottom. Fig. \ref{fig.Plus15} and Fig.
+\ref{fig.Plus85} show visualizations of the $z>0$, $\phi>0$ case where the angles are $15^\circ$ and $85^\circ$ and the
+other parameters are as stated above for the oblique approach angle examples. In these figures, corner 2 is the first
+point of contact of the bird with the rotor plane. Looking down from above, the turbine is rotating to the right. The
+time at which corner 2 intercepts the plane, $t_2$, is considered to be zero. The time at which the nose and the other
+corners intercept the rotor plane are given by
+\begin{eqnarray*}
+    t_{nose} &=& \frac{w \cdot sin(\phi)}{2 V_{bx}}\\
+    t_1 &=& \frac{w \cdot sin(\phi)}{V_{bx}}\\
+    t_2 &=& 0\\
+    t_3 &=& \frac{l \cdot cos(\phi)}{V_{bx}}\\
+    t_4 &=& t_1 + \frac{l \cdot cos(\phi)}{V_{bx}}
+\end{eqnarray*}
+and the y coordinates of these intercepts are given by
+\begin{eqnarray*}
+    y_1 &=& y_{nose}+\frac{w \cdot cos(\phi)}{2}+(t_1-t_{nose})V_{by}\\
+    y_2 &=& y_{nose}-\frac{w \cdot cos(\phi)}{2}-t_{nose}V_{by}\\
+    y_3 &=& y_2-l \cdot sin(\phi) + t_3V_{by}\\
+    y_4 &=& y_1-l \cdot sin(\phi) + (t_4-t_1)V_{by}
+\end{eqnarray*}
+The time required for the rotor to travel from $y_2$ to $y_3$ is given by
+\begin{equation*}
+    t_r = \frac{1}{\Omega}(\arctan(y_2/z)-\arctan(y_3/z))
+\end{equation*}
+Two cases must be considered to determine the types of collisions possible: $t_r>t_3$ and $t_r<t_3$. These two
+scenarios may lead to left edge ($\overline{23}$) and right edge ($\overline{14}$) collisions, respectively. Leading
+edge ($\overline{12}$) collisions are possible and trailing edge ($\overline{34}$) collisions are impossible in both
+cases.
+
+\subsubsection{Right Edge Collisions}
+For the set of parameters used in Fig \ref{fig.Plus15}, if the rotor is to the left of corner 2 as the bird enters the
+rotor plane, it is impossible for the left edge of the bird ($\overline{23}$) to overtake the rotor, resulting in a
+collision. Since $t_r<t_3$, the rotor is traveling to the left at a faster velocity than the right edge of the bird is
+sweeping through the rotor plane. The green circle indicates the most advanced position of the rotor as the bird enters
+the rotor plane that will result in a collision. This collision will occur with corner 2 of the bird at the instant the
+bird enters the rotor plane. The point is given by
+\begin{eqnarray}
+    \nonumber y_- &=& y_2\\
+    &=& y_{nose}-\frac{w \cdot cos(\phi)}{2}-t_{nose}V_{by}
+\end{eqnarray}
+The rotational angle associated with the green circle is $\theta_+$ (see Fig. \ref{fig.DeadOn}) and is given by
+\begin{equation}
+    \theta_+ = \arctan\left(\frac{z}{y_{nose}-\frac{w \cdot cos(\phi)}{2}-t_{nose}V_{by}}\right)
+\end{equation}
+
+Since the right edge of the bird ($\overline{14}$) also sweeps through the rotor plane slower than the rotor to the
+left, it is possible for the rotor to clip corner 4 of the bird. Therefore, the last possible collision with the bird
+occurs at the position of the black circle as corner 4 passes through the rotor plane. This point is given by
+\begin{eqnarray}
+    \nonumber y_+ &=& y_4\\
+    &=& y_1-l \cdot sin(\phi) + (t_4-t_1)V_{by}
+\end{eqnarray}
+The rotation angle associated with $y_-$ is $\theta_-$ (see bottom pane of Fig. \ref{fig.DeadOn}) and is given by
+\begin{equation}
+    \theta_- = \arctan\left(\frac{z}{y_1-l \cdot sin(\phi) + (t_4-t_1)V_{by}}\right)
+\end{equation}
+The collision probability can then be calculated using (\ref{DownwindProbability}).
+
+The same analysis applies for $z<0$, $\phi<0$ in downwind flight and $z>0$, $\phi<0$ in upwind flight except the corner
+definitions must be swapped to account for the negative angle of approach where corner 1 is the first to intercept the
+rotor plane.
+
+\subsubsection{Left Edge Collisions} For the set of parameters used in Fig \ref{fig.Plus85}, the increased angle of
+approach increase the speed at which the left edge of the bird ($\overline{23}$) sweeps through the rotor plane, such
+that the rotor takes more time to travel the horizontal distance swept by this leading edge ($t_r>t_3$). This makes it
+possible for a collision to occur between the rotor and the left edge of the bird. The green circle indicates the
+initial position of the rotor (at $t=0$) that will clip corner 3 of the bird as the bird passes through the rotor
+plane. The point is given by
+\begin{equation}
+    y_+ = \tan(\arctan(y_3/z)+t_3\Omega)z
+\end{equation}
+The rotational angle associated with the green circle is $\theta_+$ (see Fig. \ref{fig.DeadOn}) and is given by
+\begin{equation}
+    \theta_+ = \arctan\left(\frac{z}{\tan(\arctan(y_3/z)+t_3\Omega)z}\right)
+\end{equation}
+
+Since the right edge of the bird ($\overline{14}$) also sweeps to the left through the rotor plane faster than the
+rotor, it is impossible for the rotor to clip corner 4 of the bird. Therefore, the last possible collision with the
+bird occurs at the position of the black circle as corner 1 passes through the rotor plane. This point is given by
+\begin{eqnarray}
+    \nonumber y_- &=& y_1\\
+    &=& y_{nose}+\frac{w \cdot cos(\phi)}{2}+(t_1-t_{nose})V_{by}
+\end{eqnarray}
+The rotation angle associated with $y_-$ is $\theta_-$ (see bottom pane of Fig. \ref{fig.DeadOn}) and is given by
+\begin{equation}
+    \theta_- = \arctan \left(\frac{z}{y_{nose}+\frac{w \cdot cos(\phi)}{2}+(t_1-t_{nose})V_{by}}\right)
+\end{equation}
+The collision probability can then be calculated using (\ref{DownwindProbability}).
+
+The same analysis applies for $z<0$, $\phi<0$ in downwind flight and $z>0$, $\phi<0$ in upwind flight except the corner
+definitions must be swapped to account for the negative angle of approach where corner 1 is the first to intercept the
+rotor plane.
+
+\subsubsection{Oblique Approach Turbine Collision Probabilities}
+Figs. \ref{fig.Minus7Turbine}-\ref{fig.Plus85Turbine} show the collision probability contours for the four approach
+angles described above ($-7^\circ$, $-15^\circ$, $15^\circ$, and $85^\circ$), respectively. For all of these cases, the
+bird's air velocity $V_b$ is 5 m/s, the wind velocity $V_w$ is 10 m/s, and the other model parameters are as specified
+in Table \ref{table.example_parameters}. In Fig. \ref{fig.Minus7Turbine} ($-7^\circ$ approach), it is apparent that the
+contours are not symmetric about the horizontal axis. Since the bird is moving to the left, it is traveling in the
+direction of the rotors in the top half of the turbine and against the direction of the rotors in the bottom half. As a
+result, the probability of a collision is higher in the bottom half. In Fig. \ref{fig.Minus15Turbine} ($-15^\circ$
+approach), this effect is amplified. Also note that the collision probabilities are higher in both halves for this case
+since the oblique angle of approach means that the birds spend more time in the plane of the rotors. In Fig.
+\ref{fig.Plus15Turbine} ($15^\circ$ approach), the probabilities for a $15^\circ$ approach are identical to a
+$-15^\circ$ approach flipped about the horizontal axis of the turbine. This is because the bird is now moving against
+the direction of the rotor rotation in the top half and with the direction of the rotor rotation in the bottom half. In
+Fig. \ref{fig.Plus85Turbine} ($85^\circ$ approach), we can see that the highly oblique angle of the flight path
+($25.5^\circ$ after accounting for wind velocity) results in a high probability of collision ($>0.5$) across the entire
+face of the turbine. Also note, however, that the profile of the turbine, as viewed by the bird, is reduced, resulting
+in a more narrow flight path that may result in a collision.
+
+\begin{figure}
+   \centering
+   \includegraphics[width=1.0\columnwidth]{Minus7Turbine}
+   \caption{Probability contours for a downwind flight path where the approach angle is $-7^\circ$ (see Fig. \ref{fig.Minus7}), bird's air velocity $V_b$ is 5
+m/s, the wind velocity $V_w$ is 10 m/s, and the other model parameters are as specified in Table
+\ref{table.example_parameters}}
+   \label{fig.Minus7Turbine}
+   \end{figure}
+
+\begin{figure}
+   \centering
+   \includegraphics[width=1.0\columnwidth]{Minus15Turbine}
+   \caption{Probability contours for a downwind flight path where the approach angle is $-15^\circ$ (see Fig. \ref{fig.Minus15}), bird's air velocity $V_b$ is 5
+m/s, the wind velocity $V_w$ is 10 m/s, and the other model parameters are as specified in Table
+\ref{table.example_parameters}}
+   \label{fig.Minus15Turbine}
+   \end{figure}
+
+\begin{figure}
+   \centering
+   \includegraphics[width=1.0\columnwidth]{Plus15Turbine}
+   \caption{Probability contours for a downwind flight path where the approach angle is $15^\circ$ (see Fig. \ref{fig.Plus15}), bird's air velocity $V_b$ is 5
+m/s, the wind velocity $V_w$ is 10 m/s, and the other model parameters are as specified in Table
+\ref{table.example_parameters}}
+   \label{fig.Plus15Turbine}
+   \end{figure}
+
+\begin{figure}
+   \centering
+   \includegraphics[width=1.0\columnwidth]{Plus85Turbine}
+   \caption{Probability contours for a downwind flight path where the approach angle is $85^\circ$ (see Fig. \ref{fig.Plus85}), bird's air velocity $V_b$ is 5
+m/s, the wind velocity $V_w$ is 10 m/s, and the other model parameters are as specified in Table
+\ref{table.example_parameters}. Note how the area swept out by the turbine rotors is becoming distorted due to the
+oblique angle of approach. This is how the bird would view it as a result of the combined bird and wind velocity.}
+   \label{fig.Plus85Turbine}
+   \end{figure}
+
+
+%\begin{figure*}
+%   \centering
+%   \includegraphics[width=2.0\columnwidth]{WindFarmRisk}
+%   \caption{}
+%   \label{fig.WindFarmRisk}
+%   \end{figure*}
+
+\section{Discussion}
+The modeling of avian collision risk is an important step in the responsible deployment of wind farms. Since it has
+been shown that the mortality rate resulting from collisions between birds and wind turbines is highly dependent on the
+geology, turbine construction, and local bird species and behaviors, a model which can take into account all of these
+factors can provide useful information for the planning of these installations and can significantly reduce the impact
+on the affected bird populations.
+
+This paper has described a kinematic model for calculating collision probabilities between birds and wind turbine
+rotors. Due to its exclusion of any behavioral interactions between the birds and the turbines, this model alone is of
+limited usefulness. Rather, it is intended as a primary building block of a larger model which may account for
+behavioral interactions, populations of birds, and arrays of turbines in a wind farm.
+
+Any accurate inclusion of the complex behavior interactions in play is a non-trivial task. Avoidance behaviors vary by
+species, activity (e.g., foraging or migration), light and weather conditions, and perhaps by individual. These
+behaviors may be arbitrarily complex, ranging from long distance avoidance of the wind farm to short distance avoidance
+of an approaching rotor blade. Due to this complexity, it is common to use a global estimated avoidance rate to
+calculate the collision probabilities \cite{Cooper2004}\cite{Podolsky2005}. These avoidance rates are often estimated
+to be from 95\%-99.9\%, meaning that, at most, 5 of every 100 birds that are predicted to be hit by the model will
+actually be hit. A better estimate of these avoidance rates may be discernable by studying the species in question at a
+similar wind farm, but this is a complicated process and it is unclear how well these results may transfer to a new
+site. While the range of avoidance rates generates a corresponding range of mortality estimates, a worst case scenario
+may be acceptable for an impact assessment.
+
+
+\bibliography{./references}
+\bibliographystyle{IEEETran}
+
+\end{document}

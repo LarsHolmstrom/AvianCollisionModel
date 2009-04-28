@@ -1,0 +1,24 @@
+\contentsline {chapter}{\numberline {1}Getting Up and Running}{2}
+\contentsline {section}{\numberline {1.1}Installation}{2}
+\contentsline {subsection}{\numberline {1.1.1}Program Files}{2}
+\contentsline {subsection}{\numberline {1.1.2}Installing the Matlab Runtine}{2}
+\contentsline {subsection}{\numberline {1.1.3}Installing the Avian Collision Model}{2}
+\contentsline {section}{\numberline {1.2}Updating}{2}
+\contentsline {section}{\numberline {1.3}Launching the Application}{3}
+\contentsline {section}{\numberline {1.4}Saving and Loading Model Configurations}{3}
+\contentsline {chapter}{\numberline {2}Running the Avian Collision Model}{4}
+\contentsline {section}{\numberline {2.1}Bird Characteristics}{4}
+\contentsline {section}{\numberline {2.2}Wind Characteristics}{4}
+\contentsline {section}{\numberline {2.3}Survey Characteristics}{5}
+\contentsline {section}{\numberline {2.4}Turbine Characteristics}{5}
+\contentsline {section}{\numberline {2.5}Tower Characteristics}{5}
+\contentsline {section}{\numberline {2.6}Wind Farm Characteristics}{6}
+\contentsline {section}{\numberline {2.7}Model Selection}{6}
+\contentsline {section}{\numberline {2.8}Show Single Turbine Probabilities}{6}
+\contentsline {chapter}{\numberline {3}Model Output}{7}
+\contentsline {section}{\numberline {3.1}Turbine Collision}{7}
+\contentsline {section}{\numberline {3.2}Wind Farm Layout}{7}
+\contentsline {section}{\numberline {3.3}Compass and Directions}{7}
+\contentsline {section}{\numberline {3.4}Wind Farm Collision Probabilities}{8}
+\contentsline {section}{\numberline {3.5}Flight Path Probability Densities}{8}
+\contentsline {section}{\numberline {3.6}Combined Wind Farm / Flight Path Collision Probabilities}{8}

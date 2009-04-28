@@ -1,0 +1,19 @@
+
+wingspan = 1;
+tower_height = 100;
+tower_base_diameter = 10;
+tower_top_diameter = 15;
+tower_widest_diameter = 25;
+tower_height_at_widest = 30;
+resolution = 3;
+
+collision_probabilities = TowerCollision(wingspan, ...
+                                         tower_height, ...
+                                         tower_base_diameter, ...
+                                         tower_top_diameter, ...
+                                         tower_widest_diameter, ...
+                                         tower_height_at_widest, ...
+                                         resolution);
+                                     
+figure;
+imagesc(collision_probabilities);                            
