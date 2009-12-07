@@ -185,6 +185,14 @@ maxy = max([rotated_left_rotor_tips_y ; rotated_right_rotor_tips_y]);
 
 minx = min(rotated_turbine_locations_x) - turbine_radius; %In meters
 maxx = max(rotated_turbine_locations_x) + turbine_radius; %In meters
+
+warning('Fix this section! Don''t hardcode plot width');
+% minx = -25;
+% maxx = 25;
+minx = minx-25;
+maxx = maxx+25;
+
+
 minz = 0; %In meters
 maxz = turbine_radius + tower_height; %In meters
 num_x_pixels = ceil((maxx - minx) * resolution); %In pixels

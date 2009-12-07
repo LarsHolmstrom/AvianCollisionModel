@@ -69,14 +69,41 @@ collision_rate = per_bird_collision_probability * bird_frequency * (1 - avoidanc
 
 if plot_flag
     figure;
-    imagesc(x_ticks,y_ticks,windfarm_probabilities);
+    imagesc(x_ticks,y_ticks,windfarm_probabilities*100);
     set(gca,'YDir','normal');
-    caxis([0 1]);
+    caxis([0 100]);
     colorbar
     axis image
-    title({'Wind Farm Collision Probabilities','from the Flightpath Perspective'});
+    map = 1-bone;
+    colormap(map)
+%     title({'Wind Farm Collision Probabilities','from the Flightpath Perspective'});
+    title({'Collision Probabilities','from the Flightpath Perspective'});
     xlabel('Meters');
     ylabel('Meters');
+    
+    plot_grid = true;
+    if plot_grid
+        blackX = [];
+        blackY = [];
+        whiteX = [];
+        whiteY = [];
+        for iX = 1:30:length(x_ticks)
+            for iY = 1:30:length(y_ticks)
+                if windfarm_probabilities(iY,iX) == 1
+                    whiteX = [whiteX x_ticks(iX)];
+                    whiteY = [whiteY y_ticks(iY)];
+                else
+                    blackX = [blackX x_ticks(iX)];
+                    blackY = [blackY y_ticks(iY)];
+                end
+            end
+        end
+        hold on
+        p = plot(blackX,blackY,'.r');
+        set(p,'MarkerSize',4);
+        p = plot(whiteX,whiteY,'.r');
+        set(p,'MarkerSize',4);
+    end
     
     figure;
     imagesc(x_ticks,y_ticks,normalized_location_probabilities);

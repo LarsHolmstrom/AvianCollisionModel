@@ -1427,8 +1427,6 @@ model_data.bird_direction = get(handles.bird_direction,'string');
 model_data.tower_height = get(handles.tower_height,'string');
 model_data.tower_base_diameter = get(handles.tower_base_diameter,'string');
 model_data.tower_top_diameter = get(handles.tower_hub_diameter,'string');
-model_data.tower_widest_diameter = get(handles.tower_max_diameter,'string');
-model_data.tower_height_at_widest = get(handles.tower_widest_height,'string');
 
 %############################################################
 % Enable Switches
