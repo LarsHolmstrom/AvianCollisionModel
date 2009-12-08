@@ -1173,7 +1173,7 @@ bird_flightpath_distribution_param_2 = str2double(get(handles.bird_flightpath_di
 flight_corridor_width = str2double(get(handles.flight_corridor_width,'string'));
 
 %Hardcoded for now
-resolution = 30; %Pixels per meter
+resolution = 3; %Pixels per meter
 % resolution = 30; %Pixels per meter
 induction = 0.25;
 

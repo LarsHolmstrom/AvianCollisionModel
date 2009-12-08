@@ -8,7 +8,7 @@ function collision_probability = ObliqueCollisionProbability(B, ... %Number of b
                                                              theta_degrees, ...
                                                              Vbx, ...%Bird's velocity in the x-direction
                                                              Vby, ...%Bird's velocity in the y-direction
-                                                             y, ...
+                                                             y, ... %The y position as if you were looking directly downwind
                                                              z, ...
                                                              plot_flag)
       
@@ -51,6 +51,8 @@ elseif theta < -pi
     theta = theta + 2*pi;
 end
 
+% There may be divide by zero warnings here, but
+% atan(Inf) and atan(-Inf) seem to do the right thing.
 psi = atan(z/y);
 if (y < 0)
     psi = psi + pi;
@@ -67,16 +69,6 @@ else
     [chord_length,chord_angle] = ChordCharacteristics(R,maximum_blade_chord_length,r);
 end
 
-%FIXME
-% chord_length = 0.2;
-% chord_angle = 45;
-% chord_length = 0.2;
-% chord_angle = 90;
-% chord_length = 0;
-% chord_angle = 0;
-% if chord_angle > 90 || chord_angle < 0
-%     chord_angle
-% end
 assert(chord_angle <= 90 && chord_angle >=0);
 
 chord_angle = chord_angle/360*2*pi;
