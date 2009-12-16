@@ -23,7 +23,8 @@ pixels = round(resolution * 2 * turbine_radius);
 %Convert angular velocity from rpm's to rad/s
 angular_velocity = 2*pi*angular_velocity/60; 
 R = turbine_radius;
-
+mean_probability = 0;
+mean_aperture_probability = 0;
 
 [angle_of_orientation_degrees ...
  bird_downwind_relative_direction_radians ...
@@ -36,6 +37,7 @@ R = turbine_radius;
                        axial_induction);
 
 if plot_type == 2
+    plot_individual_bird_collisions = false;
     oblique_p = ObliqueCollisionProbability(n_blades, ...
                                             hub_radius, ...
                                             bird_length, ...
@@ -48,7 +50,7 @@ if plot_type == 2
                                             Vby, ...
                                             y_dim, ...
                                             z_dim, ...
-                                            1);
+                                            plot_individual_bird_collisions);
                                         
                                         
     return_probabilities = oblique_p;

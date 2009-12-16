@@ -28,7 +28,7 @@ width = bird_wingspan;
 %as if it is going downwind, and adjust theta.
 upwind = false;
 if (Vbx < 0)
-    assert(theta >= pi); % Flying backwards
+%     assert(theta >= pi); % Flying backwards
     Vbx = abs(Vbx);
 %     theta = mod(theta+pi,pi);
     theta = -(theta-pi);
@@ -37,10 +37,12 @@ if (Vbx < 0)
 end
 
 if abs(theta) >= pi/2
-    error_string = {'Improbable input parameters. Bird would be flying backwards.',...
-                    'Check Wind & Bird Speeds and Directions'};
-    errordlg(error_string,'Error');
-    error('Improbable input parameters. Bird would be flying backwards.');
+%     error_string = {'Improbable input parameters. Bird would be flying backwards.',...
+%                     'Check Wind & Bird Speeds and Directions'};
+%     errordlg(error_string,'Error');
+    warning('Improbable input parameters. Bird would be flying backwards.');
+    collision_probability = nan;
+    return
 end
 
 %Constrain theta to be -pi <= theta <= pi
@@ -410,13 +412,13 @@ if plot_flag
     x_last_collision_points = [last_collision_x_1 last_collision_x_nose last_collision_x_2 last_collision_x_3 last_collision_x_4 last_collision_x_1];
     z_last_collision_points = z*ones(1,6);
     
-%     x_plot_limits = [-R R];
-%     y_plot_limits = [-R R];
-%     z_plot_limits = [-R R];
+    x_plot_limits = [-R R];
+    y_plot_limits = [-R R];
+    z_plot_limits = [-R R];
     
-    x_plot_limits = [-1 1];
-    y_plot_limits = [9 11];
-    z_plot_limits = [9 11];
+%     x_plot_limits = [-1 1];
+%     y_plot_limits = [9 11];
+%     z_plot_limits = [9 11];
     %#######################################################
     %Plot the bird at the point of first contact with the rotor 
     %plane and plot where the corners intersect the rotor plane.
@@ -450,10 +452,10 @@ if plot_flag
     hub_edge = plot3(zeros(1,200),hub_radius*cos(hub_circumference),hub_radius*sin(hub_circumference),'k');
     set(hub_edge,'lineWidth',2);
 %     set(gca,'YDir','reverse');
-%     L = legend([bird_initial most_rotated least_rotated turbine_edge hub_edge],'Bird Entering Rotor Plane','First Possible Intercept','Last Possible Intercept','Turbine Boundary','Hub Boundary','Location','NorthEast');
-%     legend boxoff
-%     set(L,'FontSize',12)
-    title(['Collision Probability: ' num2str(collision_probability)]);
+    L = legend([bird_initial most_rotated least_rotated front_turbine_edge hub_edge],'Bird Entering Rotor Plane','First Possible Intercept','Last Possible Intercept','Turbine Boundary','Hub Boundary','Location','NorthEast');
+    legend boxoff
+    set(L,'FontSize',12)
+    title(['Birt at time of intersection with the rotor plane. Collision Probability: ' num2str(collision_probability)]);
     set(gca,'FontSize',12)
 %     view([0 0 -10])
     set(gca,'View',[90 -90])
@@ -497,10 +499,10 @@ if plot_flag
     hub_edge = plot3(zeros(1,200),hub_radius*cos(hub_circumference),hub_radius*sin(hub_circumference),'k');
     set(hub_edge,'lineWidth',2);
 %     set(gca,'YDir','reverse');
-%     L = legend([bird_final least_rotated turbine_edge hub_edge],'Bird At Last Possible Collision','Last Possible Intercept','Turbine Boundary','Hub Boundary','Location','NorthEast');
-%     legend boxoff
-%     set(L,'FontSize',12)
-    title(['Collision Probability: ' num2str(collision_probability)]);
+    L = legend([bird_final least_rotated front_turbine_edge hub_edge],'Bird At Last Possible Collision','Last Possible Intercept','Turbine Boundary','Hub Boundary','Location','NorthEast');
+    legend boxoff
+    set(L,'FontSize',12)
+    title(['Bird at the time of the most rotated collision. Collision Probability: ' num2str(collision_probability)]);
     set(gca,'FontSize',12)
 %     view([0 0 -10])
     set(gca,'View',[90 -90])
@@ -538,10 +540,10 @@ if plot_flag
     hub_edge = plot3(zeros(1,200),hub_radius*cos(hub_circumference),hub_radius*sin(hub_circumference),'k');
     set(hub_edge,'lineWidth',2);
 %     set(gca,'YDir','reverse');
-%     L = legend([bird_final least_rotated turbine_edge hub_edge],'Bird At Last Possible Collision','Last Possible Intercept','Turbine Boundary','Hub Boundary','Location','NorthEast');
-%     legend boxoff
-%     set(L,'FontSize',12)
-    title(['Collision Probability: ' num2str(collision_probability)]);
+    L = legend([bird_final least_rotated front_turbine_edge hub_edge],'Bird At Last Possible Collision','Last Possible Intercept','Turbine Boundary','Hub Boundary','Location','NorthEast');
+    legend boxoff
+    set(L,'FontSize',12)
+    title(['Bird at the time of the least rotated collision. Collision Probability: ' num2str(collision_probability)]);
     set(gca,'FontSize',12)
 %     view([0 0 -10])
     set(gca,'View',[90 -90])
