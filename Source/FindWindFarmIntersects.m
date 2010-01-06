@@ -302,12 +302,12 @@ if plot_stuff
 
         R=1;
         hold on;
-        h = plot([0 cos(wind_direction_radians)*wind_magnitude],[0 sin(wind_direction_radians)*wind_magnitude],'w','lineWidth',2);
+        h = plot([0 cos(wind_direction_radians)*wind_magnitude],[0 sin(wind_direction_radians)*wind_magnitude],'k','lineWidth',2);
         h = plot([0 cos(bird_path_directions_radians)*bird_magnitude],[0 sin(bird_path_directions_radians)*bird_magnitude],'g','lineWidth',2);
-        h = plot([0 cos(angle_of_orientation_radians)],[0 sin(angle_of_orientation_radians)],'k','lineWidth',2);
+        h = plot([0 cos(angle_of_orientation_radians)],[0 sin(angle_of_orientation_radians)],'--k','lineWidth',2);
         h = plot(R*cos(circumference),R*sin(circumference),'r','lineWidth',2);
         hl = legend('Wind Direction','Flight Path','Bird Orientation','location','EastOutside');
-        set(hl,'FontSize',12,'FontWeight','bold','Color',[.5 .5 .5]);
+        set(hl,'FontSize',12,'FontWeight','bold');
         % set(hl,'box','off');
         xlim([-1.5 1.5]);
         ylim([-1.5 1.5]);

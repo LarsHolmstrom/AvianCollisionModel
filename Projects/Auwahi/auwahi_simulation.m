@@ -1,11 +1,12 @@
 
+clear all
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load the auwahi constants
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 auwahi_constants
 
-
-n_simulations = 10000;
+plot_stuff = true;
+n_simulations = 100;
 
 figure_handle = nan;
 
@@ -42,7 +43,7 @@ for i_sim = 1:n_simulations
                                              'x_max', 3000, ...
                                              'y_max', 3000, ...
                                              'figure_handle',figure_handle, ...
-                                             'plot_stuff',false);
+                                             'plot_stuff',plot_stuff);
 
     plot_type = 2;
     model_type = 0;
@@ -85,6 +86,8 @@ for i_sim = 1:n_simulations
             cumulative_collision_probability = cumulative_collision_probability + (1 - cumulative_collision_probability) .* collision_probabilities(iCollisionProbability);
         end
         all_collision_probabilities(i_sim) = cumulative_collision_probability;
+    elseif isempty(turbine_intercepts)
+        all_collision_probabilities(i_sim) = 0;
     end
         
 end

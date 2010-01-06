@@ -3,7 +3,7 @@
 % Determine Auahi map boundary coordinates
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% The center of the map, determined from google maps & the provided map
+% The center of the map, determined from google maps & the provided map of the tower configuration
 center_of_map_lon = -156.3217515;
 center_of_map_lat = 20.5958626;
 
@@ -18,8 +18,8 @@ map_bound_bottom_right_lon = center_of_map_lon + longitude_one_and_half_km;
 map_bound_bottom_right_lat = center_of_map_lat - latitude_one_and_half_km;
 
 % These two values should be pretty close
-LatitudeLongitudeDistance(map_bound_top_left_lat,map_bound_top_left_lon,map_bound_bottom_right_lat,map_bound_bottom_right_lon)
-sqrt(3000^2 + 3000^2)
+LatitudeLongitudeDistance(map_bound_top_left_lat,map_bound_top_left_lon,map_bound_bottom_right_lat,map_bound_bottom_right_lon);
+sqrt(3000^2 + 3000^2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Create a KML file with the bounding box in it
@@ -84,6 +84,8 @@ tower(15).lon = -156.317371;
 tower(15).lat = 20.5898943;
 
 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set up the specification structures needed to drive the simulation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -94,7 +96,7 @@ end
 
 % Static turbine specification
 turbine_specification.tower_height = 50; % meters
-turbine_specification.turbine_radius = 200; % meters
+turbine_specification.turbine_radius = 30; % meters
 turbine_specification.hub_radius = 4; % meters
 turbine_specification.tower_base_diameter = 4; % meters
 turbine_specification.tower_top_diameter = 3; % meters
