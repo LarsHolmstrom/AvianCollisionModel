@@ -4,6 +4,7 @@ function p = TuckerCollisionProbability(B, ... %Number of blades
                                         bird_wingspan, ...
                                         omega, ...
                                         maximum_blade_chord_length, ... %Meters
+                                        blade_chord_length_at_hub, ...%Meters
                                         R, ...
                                         Vbx, ...%Bird's velocity in the x-direction
                                         y, ...
@@ -19,7 +20,7 @@ A = bird_wingspan/bird_length; %Aspect ratio of the bird
 
 p = B*bird_wingspan/(2*pi)*(omega/(A*Vbx) + sin(abs(psi))/r);
 
-[chord_length,chord_angle] = ChordCharacteristics(R,maximum_blade_chord_length,r);
+[chord_length,chord_angle] = ChordCharacteristics(R,maximum_blade_chord_length,blade_chord_length_at_hub,r);
 assert(chord_angle <= 90 && chord_angle >=0);
 %Convert to radians
 chord_angle = chord_angle/360*2*pi;

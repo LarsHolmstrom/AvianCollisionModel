@@ -4,6 +4,7 @@ function p = PodolskiCollisionProbability(B, ... %Number of blades
                                           bird_wingspan, ...
                                           omega, ...
                                           maximum_blade_chord_length, ... %Meters
+                                          blade_chord_length_at_hub, ... %Meters
                                           theta, ... %Naive angle of attack
                                           R, ...
                                           Vbx, ...%Bird's velocity in the x-direction
@@ -16,7 +17,7 @@ r = sqrt(y^2 + z^2);
 % %Rotational angle
 % psi = atan(z/y);
 
-[chord_length,chord_angle] = ChordCharacteristics(R,maximum_blade_chord_length,r);
+[chord_length,chord_angle] = ChordCharacteristics(R,maximum_blade_chord_length,blade_chord_length_at_hub,r);
 assert(chord_angle <= 90 && chord_angle >=0);
 %Convert to radians
 chord_angle = chord_angle/360*2*pi;

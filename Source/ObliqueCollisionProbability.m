@@ -4,6 +4,7 @@ function collision_probability = ObliqueCollisionProbability(B, ... %Number of b
                                                              bird_wingspan, ...
                                                              omega, ...
                                                              maximum_blade_chord_length, ... %Meters
+                                                             blade_chord_length_at_hub, ... %Meters
                                                              R, ...
                                                              theta_degrees, ...
                                                              Vbx, ...%Bird's velocity in the x-direction
@@ -66,9 +67,9 @@ end
 if r>R
     %If the bird's nose enters the rotor plane outside of the radius of
     %the rotor, use the chord characteristics of the edge of the rotor.
-    [chord_length,chord_angle] = ChordCharacteristics(R,maximum_blade_chord_length,R);
+    [chord_length,chord_angle] = ChordCharacteristics(R,maximum_blade_chord_length,blade_chord_length_at_hub,R);
 else
-    [chord_length,chord_angle] = ChordCharacteristics(R,maximum_blade_chord_length,r);
+    [chord_length,chord_angle] = ChordCharacteristics(R,maximum_blade_chord_length,blade_chord_length_at_hub,r);
 end
 
 assert(chord_angle <= 90 && chord_angle >=0);

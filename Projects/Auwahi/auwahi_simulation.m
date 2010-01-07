@@ -1,12 +1,12 @@
 
-clear all
+clear variables
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load the auwahi constants
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 auwahi_constants
 
 plot_stuff = true;
-n_simulations = 100;
+n_simulations = 200;
 
 figure_handle = nan;
 
@@ -22,11 +22,24 @@ for i_sim = 1:n_simulations
     bird_path_specification.height = norminv(rand(1,1),bird_path_height_mean,bird_path_height_stdev); % meters
     bird_path_specification.speed = norminv(rand(1,1),bird_speed_mean,bird_speed_stdev); % m/s
     
-    bird_path_radius_intercept = rand(1)*survey_radius;
-    bird_path_angle_intercepts = rand(1)*2*pi;
-    bird_path_specification.intercept.x = survey_radius + cos(bird_path_angle_intercepts) * bird_path_radius_intercept;
-    bird_path_specification.intercept.y = survey_radius + sin(bird_path_angle_intercepts) * bird_path_radius_intercept;
+%     bird_path_radius_intercept = rand(1)*survey_radius;
+%     bird_path_angle_intercepts = rand(1)*2*pi;
+%     bird_path_specification.intercept.x = survey_radius + cos(bird_path_angle_intercepts) * bird_path_radius_intercept;
+%     bird_path_specification.intercept.y = survey_radius + sin(bird_path_angle_intercepts) * bird_path_radius_intercept;
 
+    intercept_found = false;
+    while ~intercept_found
+        intercept_x = rand(1)*(max(bounding_polygon_x) - min(bounding_polygon_x)) + min(bounding_polygon_x);
+        intercept_y = rand(1)*(max(bounding_polygon_y) - min(bounding_polygon_y)) + min(bounding_polygon_y);
+        [in on] = inpolygon(intercept_x, intercept_y, bounding_polygon_x, bounding_polygon_y);
+        if in || on
+            intercept_found = true;
+        end
+    end
+    
+    bird_path_specification.intercept.x = intercept_x;
+    bird_path_specification.intercept.y = intercept_y;
+    
     % FIXME. This should be determined from the wind speed.
     turbine_angular_velocity = 2; % RPM
 
@@ -62,6 +75,7 @@ for i_sim = 1:n_simulations
                                                        turbine_specification.hub_radius, ... %Meters
                                                        turbine_angular_velocity, ... %RPMs
                                                        turbine_specification.maximum_blade_chord_length, ... %Meters
+                                                       turbine_specification.blade_chord_length_at_hub, ... %Meters
                                                        turbine_specification.axial_induction, ...
                                                        wind_specification.speed, ... %Meters/Second
                                                        wind_specification.direction_degrees, ... %Degrees clockwise from 12:00
@@ -94,3 +108,8 @@ end
 toc
 nanmean(all_collision_probabilities)
 bad_configurations = sum(isnan(all_collision_probabilities))
+
+hold on
+fh = fill(bounding_polygon_x, bounding_polygon_y, 'r');
+dockf
+set(fh(1),'EdgeAlpha',0,'FaceAlpha',0.3);

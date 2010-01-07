@@ -1,11 +1,11 @@
-function [chord_length,chord_angle] = ChordCharacteristics(R,max_chord_length,sample_points)
+function [chord_length,chord_angle] = ChordCharacteristics(R,max_chord_length,chord_length_at_hub,sample_points)
 
 bounds = [0 R*0.1 R*0.25 R];
 section_1_r = sample_points(find(sample_points < bounds(2)));
 section_2_r = sample_points(intersect(find(sample_points >= bounds(2)),find(sample_points < bounds(3))));
 section_3_r = sample_points(find(sample_points >= bounds(3)));
 
-c_1 = 0*section_1_r;
+c_1 = chord_length_at_hub*(0.115*R/max_chord_length)*ones(1,length(section_1_r));
 c_2 = 0.115*R*ones(1,length(section_2_r));
 c_3 = 0.168*R-0.240*section_3_r+0.1*section_3_r.^2/R;
 
