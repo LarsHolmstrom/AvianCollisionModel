@@ -28,3 +28,20 @@ gkde2([directions ; speeds]')
 
 figure;
 plot(directions,speeds,'.');
+
+foo = rand(1,100);
+% bar = rand(1,100);
+bar = foo*10;
+information(foo,bar)
+corr2(foo,bar)
+
+load rawFlightData
+directions = data(:,4);
+speeds_mph = data(:,10);
+
+speeds_ms = convvel(speeds_mph, 'mph', 'm/s');
+p = gkde2([directions' ; speeds_ms']',100,[41 .9]);
+imagesc(p.x(1,:),p.y(1,:),p.f)
+
+% shading interp
+
