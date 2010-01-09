@@ -40,8 +40,11 @@ directions = data(:,4);
 speeds_mph = data(:,10);
 
 speeds_ms = convvel(speeds_mph, 'mph', 'm/s');
-p = gkde2([directions' ; speeds_ms']',100,[41 .9]);
-imagesc(p.x(1,:),p.y(1,:),p.f)
+p = gkde2([directions' ; speeds_ms']',400,[41 .9]);
+% p = gkde2([directions' ; speeds_ms']',400,[41 1.5]);
+% p = gkde2([directions' ; speeds_ms']');
+imagesc(p.x(1,:),p.y(:,1),p.f);
+set(gca,'YDir','normal');
 
 % shading interp
 
