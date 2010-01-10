@@ -47,7 +47,8 @@ textdata = textdata(2:end,:);
 bird_directions = data(:,4);
 bird_speeds_mph = data(:,10);
 bird_speeds_ms = convvel(bird_speeds_mph, 'mph', 'm/s');
-
+wind_speeds_mph = data(:,12);
+wind_speeds_ms = convvel(wind_speeds_mph, 'mph', 'm/s');
 wind_direction_strs = textdata(:,14);
 wind_directions = nan(1,length(wind_direction_strs));
 for i = 1:length(wind_direction_strs)
@@ -85,14 +86,18 @@ iMorning = find(hours < 12);
 iEvening = find(hours >= 12);
 
 
-
+% workingSet = intersect(iSummer,iSiemans);
+% bird_directions = bird_directions(workingSet);
+% bird_speeds_ms = bird_speeds_ms(workingSet);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Generate probability distributions from raw data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-p = gkde2([bird_directions' ; bird_speeds_ms']',400,[41 .9]);
+% p = gkde2([bird_directions' ; bird_speeds_ms']',200,[41 .9]);
+p = gkde2([wind_directions ; wind_speeds_ms']',200,[41 .9],[-100 0 460 10]);
+p.f = p.f/sum(p.f(:));
 p = WrapPDF(p);
 sum(p.f(:))
 figure;
@@ -103,7 +108,8 @@ ylabel('Ground Speed (m/s)');
 title('Real Data');
 
 figure;
-plot(bird_directions, bird_speeds_ms,'.');
+% plot(bird_directions, bird_speeds_ms,'.');
+plot(wind_directions, wind_speeds_ms,'.');
 xlim([min(p.x(1,:)) max(p.x(1,:))]);
 ylim([min(p.y(:,1)) max(p.y(:,1))]);
 
@@ -115,12 +121,17 @@ for i = 1:testIterations
     directions(i) = direction;
     speeds(i) = speed;
 end
-p = gkde2([directions ; speeds]',400,[41 .9]);
-p = WrapPDF(p);
-sum(p.f(:))
+p2 = gkde2([directions ; speeds]',200,[41 .9]);
+p2.f = p2.f/sum(p2.f(:));
+p2 = WrapPDF(p2);
+sum(p2.f(:))
 figure;
-imagesc(p.x(1,:),p.y(:,1),p.f);
+plot(directions, speeds,'.');
+figure;
+imagesc(p2.x(1,:),p2.y(:,1),p2.f);
 set(gca,'YDir','normal');
 xlabel('Direction (Degrees Clockwise from North)');
 ylabel('Ground Speed (m/s)');
 title('Simulated data');
+xlim([min(p2.x(1,:)) max(p2.x(1,:))]);
+ylim([min(p2.y(:,1)) max(p2.y(:,1))]);
