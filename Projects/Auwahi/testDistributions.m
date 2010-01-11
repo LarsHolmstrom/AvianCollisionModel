@@ -38,10 +38,17 @@
 % theta = 2*pi*rand(1,50);
 % rose(theta,16)
 
+[bird_speed_pdf ...
+ bird_direction_pdf ...
+ wind_pdf ...
+ bird_height_pdf] = ...
+ GeneratePDFs('fall', 'ge', 'evening');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load and index the raw bird path data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+close all
+
 load rawFlightData
 textdata = textdata(2:end,:);
 bird_directions = data(:,4);
@@ -85,6 +92,9 @@ end
 iMorning = find(hours < 12);
 iEvening = find(hours >= 12);
 
+figure;
+hist(wind_speeds_ms,20);
+
 
 % workingSet = intersect(iSummer,iSiemans);
 % bird_directions = bird_directions(workingSet);
@@ -96,7 +106,8 @@ iEvening = find(hours >= 12);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % p = gkde2([bird_directions' ; bird_speeds_ms']',200,[41 .9]);
-p = gkde2([wind_directions ; wind_speeds_ms']',200,[41 .9],[-100 0 460 10]);
+p = gkde2([wind_directions ; wind_speeds_ms']',200,[41 .9]);
+% p = gkde2([bird_speeds_ms' ; wind_speeds_ms']',200,[41 .9]);
 p.f = p.f/sum(p.f(:));
 p = WrapPDF(p);
 sum(p.f(:))
@@ -110,6 +121,7 @@ title('Real Data');
 figure;
 % plot(bird_directions, bird_speeds_ms,'.');
 plot(wind_directions, wind_speeds_ms,'.');
+% plot(bird_speeds_ms, wind_speeds_ms,'.');
 xlim([min(p.x(1,:)) max(p.x(1,:))]);
 ylim([min(p.y(:,1)) max(p.y(:,1))]);
 

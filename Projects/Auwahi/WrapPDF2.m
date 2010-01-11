@@ -1,4 +1,4 @@
-function p = WrapPDF(p)
+function p = WrapPDF2(p)
 
 if max(p.x(1,:)) < 360
     interval = p.x(1,2) - p.x(1,1);
