@@ -1,6 +1,6 @@
 function [wind_directions wind_speeds] =  SimulateWindData(wind_data)
 
-nSimulations = 100;
+nSimulations = 1000;
 wind_directions = nan(1,nSimulations);
 wind_speeds = nan(1,nSimulations);
 

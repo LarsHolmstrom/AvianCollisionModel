@@ -1,32 +1,91 @@
 
-clear variables
+% clear variables
+% close all
+% 
+% timeOfYear = 'spring';
+% turbineType = 'ge';
+% timeOfDay = 'morning';
+% typeOfBird = 'petrel';
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Simulation settings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% plot_stuff = ~true;
+% n_simulations = 100000;
+% figure_handle = nan;
+% 
+% rotor_avoidance_rates = [0.9 0.95 0.99];
+% tower_avoidance_rate = 0.99;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load the auwahi constants
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 auwahi_constants
 
-plot_stuff = true;
-n_simulations = 200;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Create the variable PDFs from the survey and site data
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[bird_speed_pdf ...
+ bird_direction_pdf ...
+ wind_pdf ...
+ bird_height_pdf] = ...
+ GeneratePDFs(timeOfYear, turbineType, timeOfDay);
 
-figure_handle = nan;
-
+switch typeOfBird
+    case 'petrel'
+        bird_specification.wingspan = 0.91;
+        bird_specification.length = 0.43;
+    case 'shearwater'
+        bird_specification.wingspan = 0.84;
+        bird_specification.length = 0.33;
+    otherwise
+        error('Bad bird type specified');
+end
+        
 tic
-all_collision_probabilities = nan(1,n_simulations);
+all_collision_probabilities = nan(n_simulations,length(rotor_avoidance_rates));
+
+wind_directions = nan(1,n_simulations);
+wind_speeds = nan(1,n_simulations);
+bird_directions = nan(1,n_simulations);
+bird_heights = nan(1,n_simulations);
+bird_speeds = nan(1,n_simulations);
+
 for i_sim = 1:n_simulations
-    % Simulation specific wind parameters
-    wind_specification.direction_degrees = norminv(rand(1,1),wind_direction_degrees_mean,wind_direction_degrees_stdev); % degrees clockwise from north
-    wind_specification.speed = norminv(rand(1,1),wind_speed_mean,wind_speed_stdev); %m/s
-
-    % Bird path parameters
-    bird_path_specification.direction_degrees = norminv(rand(1,1),bird_path_direction_degrees_mean,bird_path_direction_degrees_stdev); % degrees clockwise from north
-    bird_path_specification.height = norminv(rand(1,1),bird_path_height_mean,bird_path_height_stdev); % meters
-    bird_path_specification.speed = norminv(rand(1,1),bird_speed_mean,bird_speed_stdev); % m/s
+    if mod(i_sim,1000) == 0
+        display(i_sim);
+    end
+    % Simulation wind parameters
+    [wind_direction wind_speed] = DrawFromPDF2(wind_pdf);
+    wind_specification.direction_degrees = mod(wind_direction+180,360);
+    wind_specification.speed = wind_speed;
     
-%     bird_path_radius_intercept = rand(1)*survey_radius;
-%     bird_path_angle_intercepts = rand(1)*2*pi;
-%     bird_path_specification.intercept.x = survey_radius + cos(bird_path_angle_intercepts) * bird_path_radius_intercept;
-%     bird_path_specification.intercept.y = survey_radius + sin(bird_path_angle_intercepts) * bird_path_radius_intercept;
+    turbine_angular_velocity = 0;
+    if (wind_speed > turbine_specification.cut_in_wind_speed && ...
+        wind_speed < turbine_specification.cut_out_wind_speed)
+        fraction_of_operational_range = ...
+            (wind_speed - turbine_specification.cut_in_wind_speed) / ...
+            (turbine_specification.cut_out_wind_speed - turbine_specification.cut_in_wind_speed);
+        turbine_angular_velocity = ...
+            turbine_specification.min_rpm + ...
+            (turbine_specification.max_rpm - turbine_specification.min_rpm) * ...
+            fraction_of_operational_range;
+    end
+    % Simulation bird path parameters
+    bird_path_specification.direction_degrees = mod(DrawFromPDF(bird_direction_pdf.pdf,bird_direction_pdf.intervals)+180,360);
+    bird_path_specification.height = DrawFromPDF(bird_height_pdf.pdf,bird_height_pdf.intervals);
+    bird_path_specification.speed = DrawFromPDF(bird_speed_pdf.pdf,bird_speed_pdf.intervals);
 
+    
+    % Store for validation
+    wind_directions(i_sim) = wind_specification.direction_degrees;
+    wind_speeds(i_sim) = wind_specification.speed;
+    bird_directions(i_sim) = bird_path_specification.direction_degrees;
+    bird_heights(i_sim) = bird_path_specification.height;
+    bird_speeds(i_sim) = bird_path_specification.speed;
+    
+    % Pick bird paths that pass through the wind farm area
     intercept_found = false;
     while ~intercept_found
         intercept_x = rand(1)*(max(bounding_polygon_x) - min(bounding_polygon_x)) + min(bounding_polygon_x);
@@ -39,9 +98,6 @@ for i_sim = 1:n_simulations
     
     bird_path_specification.intercept.x = intercept_x;
     bird_path_specification.intercept.y = intercept_y;
-    
-    % FIXME. This should be determined from the wind speed.
-    turbine_angular_velocity = 2; % RPM
 
     [turbine_intercepts, ...
      tower_intercepts, ...
@@ -88,28 +144,38 @@ for i_sim = 1:n_simulations
                                                        z_dim); %Meters
 
         assert(length(collision_probability) == 1);
+        if collision_probability < 0
+            foo = 1;
+        end
         collision_probabilities(iIntercept) = collision_probability;
 
     end
     
     collision_probabilities = collision_probabilities(~isnan(collision_probabilities));
     
+    cumulative_collision_probability = zeros(1,length(rotor_avoidance_rates));
     if ~isempty(collision_probabilities)
-        cumulative_collision_probability = 0;
         for iCollisionProbability = 1:length(collision_probabilities)
-            cumulative_collision_probability = cumulative_collision_probability + (1 - cumulative_collision_probability) .* collision_probabilities(iCollisionProbability);
+            cumulative_collision_probability = cumulative_collision_probability + (1 - cumulative_collision_probability) * collision_probabilities(iCollisionProbability) .* (1-rotor_avoidance_rates);
         end
-        all_collision_probabilities(i_sim) = cumulative_collision_probability;
-    elseif isempty(turbine_intercepts)
-        all_collision_probabilities(i_sim) = 0;
     end
-        
+    if ~isempty(turbine_intercepts)
+        for iTurbineIntercept = 1:length(turbine_intercepts)
+            cumulative_collision_probability = cumulative_collision_probability + (1 - cumulative_collision_probability) * (1 - tower_avoidance_rate);
+        end
+    end
+    
+    all_collision_probabilities(i_sim,:) = cumulative_collision_probability;
 end
 toc
-nanmean(all_collision_probabilities)
-bad_configurations = sum(isnan(all_collision_probabilities))
+mean_collision_probabilities = nanmean(all_collision_probabilities)
+bad_configurations = sum(isnan(all_collision_probabilities(:,1)))
 
-hold on
-fh = fill(bounding_polygon_x, bounding_polygon_y, 'r');
-dockf
-set(fh(1),'EdgeAlpha',0,'FaceAlpha',0.3);
+non_zero_probabilities = all_collision_probabilities(find(all_collision_probabilities(:,3) > 0));
+
+if plot_stuff
+    hold on
+    fh = fill(bounding_polygon_x, bounding_polygon_y, 'r');
+    dockf
+    set(fh(1),'EdgeAlpha',0,'FaceAlpha',0.3);
+end

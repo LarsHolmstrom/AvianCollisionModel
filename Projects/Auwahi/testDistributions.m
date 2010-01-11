@@ -42,7 +42,9 @@
  bird_direction_pdf ...
  wind_pdf ...
  bird_height_pdf] = ...
- GeneratePDFs('fall', 'ge', 'evening');
+ GeneratePDFs('spring', 'ge', 'morning');
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load and index the raw bird path data

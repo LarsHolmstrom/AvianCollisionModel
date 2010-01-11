@@ -102,6 +102,10 @@ if turbine_model == 0 % GE 1.5 SE
     turbine_specification.maximum_blade_chord_length = 1.5; % meters
     turbine_specification.blade_chord_length_at_hub = 0.8;
     turbine_specification.axial_induction = 0.25; % meters
+    turbine_specification.cut_in_wind_speed = 4; %m/s
+    turbine_specification.cut_out_wind_speed = 25; %m/s
+    turbine_specification.min_rpm = 11.1; %rpms
+    turbine_specification.max_rpm = 22.2; %rpms
 elseif turbine_model == 1 % Siemens SWT 2.3-101
     tower_layout = 6:15;
     % Static turbine specification
@@ -114,6 +118,10 @@ elseif turbine_model == 1 % Siemens SWT 2.3-101
     turbine_specification.maximum_blade_chord_length = 3.4; % meters
     turbine_specification.blade_chord_length_at_hub = 2.4;
     turbine_specification.axial_induction = 0.25; % meters
+    turbine_specification.cut_in_wind_speed = 4; %m/s
+    turbine_specification.cut_out_wind_speed = 25; %m/s
+    turbine_specification.min_rpm = 6; %rpms
+    turbine_specification.max_rpm = 16; %rpms
 else % Vestas V90
     tower_layout = 8:15;
     % Static turbine specification
@@ -126,6 +134,10 @@ else % Vestas V90
     turbine_specification.maximum_blade_chord_length = 3.512; % meters
     turbine_specification.blade_chord_length_at_hub = 1.88;
     turbine_specification.axial_induction = 0.25; % meters
+    turbine_specification.cut_in_wind_speed = 4; %m/s
+    turbine_specification.cut_out_wind_speed = 25; %m/s
+    turbine_specification.min_rpm = 8.6; %rpms
+    turbine_specification.max_rpm = 18.4; %rpms
 end
 
 jTower = 0;
@@ -171,36 +183,36 @@ end
 
 
 % Static bird parameters
-bird_specification.wingspan = 1;
-bird_specification.length = 2;
+% bird_specification.wingspan = 1;
+% bird_specification.length = 2;
 
 survey_radius = 1500; % meters
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simulation parameters.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Simulate normal distribution of bird paths
-bird_path_direction_degrees_mean = 200;
-bird_path_direction_degrees_stdev = 20;
-
-% Simulate normal distribution of bird heights
-bird_path_height_mean = 60;
-bird_path_height_stdev = 15;
-
-% Simulate normal distribution of bird heights
-bird_speed_mean = 25;
-bird_speed_stdev = 2;
-
-% Simulate normal distribution of bird paths
-% wind_direction_degrees_mean = 150;
-% wind_direction_degrees_stdev = 20;
-wind_direction_degrees_mean = 90;
-wind_direction_degrees_stdev = 0.1;
-
-% Simulate normal distribution of bird heights
-wind_speed_mean = 10;
-wind_speed_stdev = 2;
+% 
+% % Simulate normal distribution of bird paths
+% bird_path_direction_degrees_mean = 200;
+% bird_path_direction_degrees_stdev = 20;
+% 
+% % Simulate normal distribution of bird heights
+% bird_path_height_mean = 60;
+% bird_path_height_stdev = 15;
+% 
+% % Simulate normal distribution of bird heights
+% bird_speed_mean = 25;
+% bird_speed_stdev = 2;
+% 
+% % Simulate normal distribution of bird paths
+% % wind_direction_degrees_mean = 150;
+% % wind_direction_degrees_stdev = 20;
+% wind_direction_degrees_mean = 90;
+% wind_direction_degrees_stdev = 0.1;
+% 
+% % Simulate normal distribution of bird heights
+% wind_speed_mean = 10;
+% wind_speed_stdev = 2;
 
 
 

@@ -1,15 +1,16 @@
 function ...
-[bird_speed_pdf ...
- bird_direction_pdf ...
+[bird_speed ...
+ bird_direction ...
  wind_pdf ...
- bird_height_pdf] = ...
+ bird_height] = ...
  GeneratePDFs(season, turbineType, timeOfDay)
 
-plotPDFs = true;
+plotPDFs = false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load and index the raw bird path data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 load rawFlightData
+load flight_heights
 windData; %Load the MET tower wind data
 textdata = textdata(2:end,:);
 bird_directions = data(:,4);
@@ -39,7 +40,6 @@ for i = 1:length(wind_direction_strs)
             wind_directions(i) = 315;
     end
 end
-bird_height = data(1:19,17);
 
 iSummer = 20:26;
 iFall = [1:19 27:103];
@@ -114,28 +114,71 @@ end
 bird_directions = bird_directions(workingSet);
 bird_speeds_ms = bird_speeds_ms(workingSet);
 
+% User kernel smoothing for the pdf estimation
 wind_pdf = gkde2([wind_directions ; wind_speeds]',200,[10 0.9086]);
 wind_pdf.f = wind_pdf.f/sum(wind_pdf.f(:));
 wind_pdf = WrapPDF2(wind_pdf);
+                   
+[bird_speed_pdf bird_speed_intervals] = ksdensity(bird_speeds_ms,'function','pdf');
+bird_speed.pdf = bird_speed_pdf/sum(bird_speed_pdf);
+bird_speed.intervals = bird_speed_intervals;
+less_than_zero_index = find(bird_speed.intervals < 0,1,'last');
+if ~isempty(less_than_zero_index)
+    bird_speed.intervals = bird_speed.intervals(less_than_zero_index+1:end);
+    bird_speed.pdf = bird_speed.pdf(less_than_zero_index+1:end);
+    bird_speed.pdf = bird_speed.pdf/sum(bird_speed.pdf);
+end
+
+[bird_direction_pdf  bird_direction_intervals] = ksdensity(bird_directions,'function','pdf');
+bird_direction.intervals = bird_direction_intervals;
+bird_direction.pdf = bird_direction_pdf/sum(bird_direction_pdf);
+bird_direction = WrapPDF(bird_direction);
+bird_direction.pdf = bird_direction.pdf/sum(bird_direction.pdf);
+
+[bird_height_pdf bird_height_intervals] = ksdensity(flight_heights,'function','pdf');
+bird_height.pdf = bird_height_pdf/sum(bird_height_pdf);
+bird_height.intervals = bird_height_intervals;
+less_than_zero_index = find(bird_height.intervals < 0,1,'last');
+if ~isempty(less_than_zero_index)
+    bird_height.intervals = bird_height.intervals(less_than_zero_index+1:end);
+    bird_height.pdf = bird_height.pdf(less_than_zero_index+1:end);
+    bird_height.pdf = bird_height.pdf/sum(bird_height.pdf);
+end
+                 
+% Confirm that they are normalized
 sum(wind_pdf.f(:))
+sum(bird_speed.pdf(:))
+sum(bird_direction.pdf(:))
+sum(bird_height.pdf(:))
+                 
+                 
+
 if plotPDFs
     figure;
     imagesc(wind_pdf.x(1,:),wind_pdf.y(:,1),wind_pdf.f);
     set(gca,'YDir','normal');
     xlabel('Wind Direction (Degrees Clockwise from North)');
     ylabel('Wind Speed (m/s)');
-    title('Real Data');      
+    colorbar
+    
+    figure;
+    plot(bird_speed.intervals, bird_speed.pdf);
+    xlabel('Bird speed (m/s)');
+    ylabel('Density');
+    xlim([min(bird_speed.intervals) max(bird_speed.intervals)]);
+    
+    figure;
+    plot(bird_direction.intervals, bird_direction.pdf);
+    xlabel('Bird bearing PDF (Degrees Clockwise from North)');
+    ylabel('Density');
+    xlim([min(bird_direction.intervals) max(bird_direction.intervals)]);
+    
+    figure;
+    plot(bird_height.intervals, bird_height.pdf);
+    xlabel('Bird height (m)');
+    ylabel('Density');
+    xlim([min(bird_height.intervals) max(bird_height.intervals)]);
 end
-                   
-[bird_speed_pdf bird_speed_Intervals] = ksdensity(bird_speeds_ms,'function','cdf');
-[bird_direction_pdf  bird_direction_Intervals] = ksdensity(bird_directions,'function','cdf');
-[bird_height_pdf bird_height_Intervals] = ksdensity(bird_height,'function','cdf');
-                 
-                 
-                 
-                 
-                 
-                 
                  
                  
                  
