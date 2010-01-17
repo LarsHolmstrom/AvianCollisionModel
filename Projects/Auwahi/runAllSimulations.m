@@ -18,18 +18,21 @@ typeOfBird = 'petrel';
 fid = fopen('SimulationResults.csv','w');
 fprintf(fid,'Turbine Type, Time of Year, Time of Day, Bird Species, 0.9, 0.95, 0.99\n');
 
-turbineTypes = {'ge','siemans','vestas'};
-timesOfYear = {'spring','fall'};
-timesOfDay = {'morning','evening'};
-typesOfBird = {'petrel','shearwater'};
+% turbineTypes = {'ge','siemans','vestas'};
+% timesOfYear = {'spring','fall'};
+% timesOfDay = {'morning','evening'};
+% typesOfBird = {'petrel','shearwater'};
 
-% turbineTypes = {'ge','siemans'};
-% timesOfYear = {'spring'};
-% timesOfDay = {'morning'};
-% typesOfBird = {'petrel'};
+turbineTypes = {'vestas'};
+timesOfYear = {'fall'};
+timesOfDay = {'evening'};
+typesOfBird = {'shearwater'};
 
-nRuns = 0;
+all_probabilities = {};
+
+iRun = 0;
 for iTurbineType = 1:length(turbineTypes)
+    iRun = iRun + 1;
     turbineType = turbineTypes{iTurbineType};
     for iTimeOfYear = 1:length(timesOfYear);
         timeOfYear = timesOfYear{iTimeOfYear};
@@ -39,6 +42,7 @@ for iTurbineType = 1:length(turbineTypes)
                 typeOfBird = typesOfBird{iTypeOfBird};
                 display([turbineType ' ' timeOfYear ' ' timeOfDay ' ' typeOfBird]);
                 auwahi_simulation
+                all_probabilities{iRun} = all_collision_probabilities;
                 fprintf(fid, '%s, %s, %s, %s, %f, %f, %f\n', turbineType, timeOfYear, timeOfDay, typeOfBird, mean_collision_probabilities(1), mean_collision_probabilities(2), mean_collision_probabilities(3));
             end
         end

@@ -5,7 +5,7 @@ function ...
  bird_height] = ...
  GeneratePDFs(season, turbineType, timeOfDay)
 
-plotPDFs = false;
+plotPDFs = ~true;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load and index the raw bird path data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -135,15 +135,21 @@ bird_direction.pdf = bird_direction_pdf/sum(bird_direction_pdf);
 bird_direction = WrapPDF(bird_direction);
 bird_direction.pdf = bird_direction.pdf/sum(bird_direction.pdf);
 
-[bird_height_pdf bird_height_intervals] = ksdensity(flight_heights,'function','pdf');
-bird_height.pdf = bird_height_pdf/sum(bird_height_pdf);
-bird_height.intervals = bird_height_intervals;
-less_than_zero_index = find(bird_height.intervals < 0,1,'last');
-if ~isempty(less_than_zero_index)
-    bird_height.intervals = bird_height.intervals(less_than_zero_index+1:end);
-    bird_height.pdf = bird_height.pdf(less_than_zero_index+1:end);
-    bird_height.pdf = bird_height.pdf/sum(bird_height.pdf);
-end
+load flight_heights
+height_samples = 1:1:1000;
+[a b] = gamfit(flight_heights);
+bird_height.pdf = gampdf(height_samples,a(1),a(2));
+bird_height.intervals = height_samples;
+
+% [bird_height_pdf bird_height_intervals] = ksdensity(flight_heights,'function','pdf');
+% bird_height.pdf = bird_height_pdf/sum(bird_height_pdf);
+% bird_height.intervals = bird_height_intervals;
+% less_than_zero_index = find(bird_height.intervals < 0,1,'last');
+% if ~isempty(less_than_zero_index)
+%     bird_height.intervals = bird_height.intervals(less_than_zero_index+1:end);
+%     bird_height.pdf = bird_height.pdf(less_than_zero_index+1:end);
+%     bird_height.pdf = bird_height.pdf/sum(bird_height.pdf);
+% end
                  
 % Confirm that they are normalized
 sum(wind_pdf.f(:))

@@ -77,7 +77,6 @@ for i_sim = 1:n_simulations
     bird_path_specification.height = DrawFromPDF(bird_height_pdf.pdf,bird_height_pdf.intervals);
     bird_path_specification.speed = DrawFromPDF(bird_speed_pdf.pdf,bird_speed_pdf.intervals);
 
-    
     % Store for validation
     wind_directions(i_sim) = wind_specification.direction_degrees;
     wind_speeds(i_sim) = wind_specification.speed;
@@ -153,14 +152,21 @@ for i_sim = 1:n_simulations
     
     collision_probabilities = collision_probabilities(~isnan(collision_probabilities));
     
+    if length(collision_probabilities) > 1
+        foo = 1;
+    end
+    if length(tower_intercepts) > 1
+        foo = 1;
+    end
+    
     cumulative_collision_probability = zeros(1,length(rotor_avoidance_rates));
     if ~isempty(collision_probabilities)
         for iCollisionProbability = 1:length(collision_probabilities)
             cumulative_collision_probability = cumulative_collision_probability + (1 - cumulative_collision_probability) * collision_probabilities(iCollisionProbability) .* (1-rotor_avoidance_rates);
         end
     end
-    if ~isempty(turbine_intercepts)
-        for iTurbineIntercept = 1:length(turbine_intercepts)
+    if ~isempty(tower_intercepts)
+        for iTowerIntercept = 1:length(tower_intercepts)
             cumulative_collision_probability = cumulative_collision_probability + (1 - cumulative_collision_probability) * (1 - tower_avoidance_rate);
         end
     end

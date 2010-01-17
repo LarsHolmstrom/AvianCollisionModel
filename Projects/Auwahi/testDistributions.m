@@ -38,6 +38,12 @@
 % theta = 2*pi*rand(1,50);
 % rose(theta,16)
 
+load flight_heights
+[a b] = gamfit(bird_heights);
+p = gampdf(1:0.1:1000,a(1),a(2));
+pinv = gamcdf([99.95 130.5 125],a(1),a(2));
+figure;plot(1:0.1:1000,p)
+
 [bird_speed_pdf ...
  bird_direction_pdf ...
  wind_pdf ...
@@ -96,6 +102,12 @@ iEvening = find(hours >= 12);
 
 figure;
 hist(wind_speeds_ms,20);
+
+test_heights = nan(1,2000);
+for iz = 1:2000
+    test_heights(iz) =  DrawFromPDF(bird_height_pdf.pdf,bird_height_pdf.intervals);
+end
+figure;hist(test_heights,200);
 
 
 % workingSet = intersect(iSummer,iSiemans);
