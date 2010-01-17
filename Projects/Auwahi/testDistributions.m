@@ -39,16 +39,33 @@
 % rose(theta,16)
 
 load flight_heights
-[a b] = gamfit(bird_heights);
+figure;hist(flight_heights,20);
+xlim([0 1000])
+[a b] = gamfit(flight_heights);
 p = gampdf(1:0.1:1000,a(1),a(2));
-pinv = gamcdf([99.95 130.5 125],a(1),a(2));
-figure;plot(1:0.1:1000,p)
+% pinv = gamcdf([99.95 130.5 125],a(1),a(2));
+% figure;
+hold on
+ph = plot(1:0.1:1000,8*p/max(p),'r')
+set(ph,'LineWidth',3);
+xlabel('Bird Height (m)');
+ylabel('n')
+legend({'Observed Data','Gamma Fit'})
 
 [bird_speed_pdf ...
  bird_direction_pdf ...
  wind_pdf ...
  bird_height_pdf] = ...
  GeneratePDFs('spring', 'ge', 'morning');
+
+nSimulations = 100000;
+wind_directions = nan(1,nSimulations);
+wind_speeds = nan(1,nSimulations);
+for i = 1:nSimulations
+    [wind_speed wind_direction] = GetWindSample(slow_wind_speed, fast_wind_speed);
+    wind_speeds(i) = wind_speed;
+    wind_directions(i) = wind_direction;
+end
 
 
 

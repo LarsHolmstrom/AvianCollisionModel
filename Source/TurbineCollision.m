@@ -18,7 +18,8 @@ function [return_probabilities ...
                                                        resolution, ... %Pixels/Meter
                                                        model_type, ...
                                                        y_dim, ... %Meters
-                                                       z_dim) %Meters
+                                                       z_dim, ... %Meters
+                                                       rotor_pitch) %degrees
 
 pixels = round(resolution * 2 * turbine_radius);
 %Convert angular velocity from rpm's to rad/s
@@ -52,7 +53,8 @@ if plot_type == 2
                                             Vby, ...
                                             y_dim, ...
                                             z_dim, ...
-                                            plot_individual_bird_collisions);
+                                            plot_individual_bird_collisions, ...
+                                            rotor_pitch); %Degrees
                                         
                                         
     return_probabilities = oblique_p;

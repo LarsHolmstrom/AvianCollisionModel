@@ -1,7 +1,8 @@
 function ...
 [bird_speed ...
  bird_direction ...
- wind_pdf ...
+ slow_wind_speed ...
+ fast_wind_speed ...
  bird_height] = ...
  GeneratePDFs(season, turbineType, timeOfDay)
 
@@ -43,6 +44,7 @@ end
 
 iSummer = 20:26;
 iFall = [1:19 27:103];
+iSummerAndFall = [iSummer iFall];
 iGE = strmatch('N',textdata(:,21));
 iSiemans = strmatch('N',textdata(:,22));
 iVestas = strmatch('N',textdata(:,23));
@@ -53,6 +55,7 @@ for i=1:length(hours)
 end
 iMorning = find(hours < 12);
 iEvening = find(hours >= 12);
+iMorningAndEvening = [iMorning iEvening];
 
 % Initialize by using all data
 workingSet = 1:size(bird_speeds_mph,1);
@@ -81,6 +84,24 @@ switch season
                            wind_speeds_11_07 ;...
                            wind_speeds_11_08 ;...
                            wind_speeds_11_09];
+    case 'springAndFall'
+        wind_speed_data = [wind_speeds_04_07 ;...
+                           wind_speeds_04_08 ;...
+                           wind_speeds_04_09 ;...
+                           wind_speeds_05_07 ;...
+                           wind_speeds_05_08 ;...
+                           wind_speeds_05_09 ;...
+                           wind_speeds_06_07 ;...
+                           wind_speeds_06_08 ;...
+                           wind_speeds_06_09 ;...
+                           wind_speeds_09_08 ;...
+                           wind_speeds_09_09 ;...
+                           wind_speeds_10_07 ;...
+                           wind_speeds_10_08 ;...
+                           wind_speeds_10_09 ;...
+                           wind_speeds_11_07 ;...
+                           wind_speeds_11_08 ;...
+                           wind_speeds_11_09];
     otherwise
         error('Badly specified season string');
 end
@@ -92,6 +113,10 @@ switch timeOfDay
     case 'evening'
         wind_data = wind_speed_data(:,19:22);
         workingSet = intersect(workingSet,iEvening);
+    case 'morningAndEvening'
+        wind_data = wind_speed_data(:,[5:8 19:22]);
+        workingSet = intersect(workingSet,iEvening);
+        
     otherwise
         error('Badly specified timeOfDay string');
 end
@@ -107,17 +132,35 @@ switch turbineType
         error('Badly specified turbineType string');
 end
 
-[wind_directions wind_speeds] =  SimulateWindData(wind_speed_data);
+[wind_speed_pdf wind_speed_intervals] = ksdensity(wind_speed_data(:),'function','pdf');
+wind_speed.pdf = wind_speed_pdf/sum(wind_speed_pdf);
+wind_speed.intervals = wind_speed_intervals;
+less_than_zero_index = find(wind_speed.intervals < 0,1,'last');
+if ~isempty(less_than_zero_index)
+    wind_speed.intervals = wind_speed.intervals(less_than_zero_index+1:end);
+    wind_speed.pdf = wind_speed.pdf(less_than_zero_index+1:end);
+    wind_speed.pdf = wind_speed.pdf/sum(wind_speed.pdf);
+end
+less_than_four_index = find(wind_speed.intervals < 4,1,'last');
+if ~isempty(less_than_four_index)
+    slow_wind_speed.intervals = wind_speed.intervals(1:less_than_four_index);
+    slow_wind_speed.pdf = wind_speed.pdf(1:less_than_four_index);
+    slow_wind_speed.pdf = slow_wind_speed.pdf/sum(slow_wind_speed.pdf);
+
+    fast_wind_speed.intervals = wind_speed.intervals(less_than_four_index+1:end);
+    fast_wind_speed.pdf = wind_speed.pdf(less_than_four_index+1:end);
+    fast_wind_speed.pdf = fast_wind_speed.pdf/sum(fast_wind_speed.pdf);
+end
 
 % Select only the rows from the raw data corresponding to the specifications
 % for the run
 bird_directions = bird_directions(workingSet);
 bird_speeds_ms = bird_speeds_ms(workingSet);
 
-% User kernel smoothing for the pdf estimation
-wind_pdf = gkde2([wind_directions ; wind_speeds]',200,[10 0.9086]);
-wind_pdf.f = wind_pdf.f/sum(wind_pdf.f(:));
-wind_pdf = WrapPDF2(wind_pdf);
+% % User kernel smoothing for the pdf estimation
+% wind_pdf = gkde2([wind_directions ; wind_speeds]',200,[10 0.9086]);
+% wind_pdf.f = wind_pdf.f/sum(wind_pdf.f(:));
+% wind_pdf = WrapPDF2(wind_pdf);
                    
 [bird_speed_pdf bird_speed_intervals] = ksdensity(bird_speeds_ms,'function','pdf');
 bird_speed.pdf = bird_speed_pdf/sum(bird_speed_pdf);
@@ -140,6 +183,7 @@ height_samples = 1:1:1000;
 [a b] = gamfit(flight_heights);
 bird_height.pdf = gampdf(height_samples,a(1),a(2));
 bird_height.intervals = height_samples;
+bird_height.pdf = bird_height.pdf/sum(bird_height.pdf);
 
 % [bird_height_pdf bird_height_intervals] = ksdensity(flight_heights,'function','pdf');
 % bird_height.pdf = bird_height_pdf/sum(bird_height_pdf);
@@ -152,7 +196,9 @@ bird_height.intervals = height_samples;
 % end
                  
 % Confirm that they are normalized
-sum(wind_pdf.f(:))
+% sum(wind_pdf.f(:))
+sum(slow_wind_speed.pdf(:))
+sum(fast_wind_speed.pdf(:))
 sum(bird_speed.pdf(:))
 sum(bird_direction.pdf(:))
 sum(bird_height.pdf(:))
@@ -160,12 +206,12 @@ sum(bird_height.pdf(:))
                  
 
 if plotPDFs
-    figure;
-    imagesc(wind_pdf.x(1,:),wind_pdf.y(:,1),wind_pdf.f);
-    set(gca,'YDir','normal');
-    xlabel('Wind Direction (Degrees Clockwise from North)');
-    ylabel('Wind Speed (m/s)');
-    colorbar
+%     figure;
+%     imagesc(wind_pdf.x(1,:),wind_pdf.y(:,1),wind_pdf.f);
+%     set(gca,'YDir','normal');
+%     xlabel('Wind Direction (Degrees Clockwise from North)');
+%     ylabel('Wind Speed (m/s)');
+%     colorbar
     
     figure;
     plot(bird_speed.intervals, bird_speed.pdf);
@@ -184,6 +230,12 @@ if plotPDFs
     xlabel('Bird height (m)');
     ylabel('Density');
     xlim([min(bird_height.intervals) max(bird_height.intervals)]);
+    
+    figure;
+    plot(wind_speed.intervals, wind_speed.pdf);
+    xlabel('Wind Speed (m/s)');
+    ylabel('Density');
+    xlim([min(wind_speed.intervals) max(wind_speed.intervals)]);
 end
                  
                  

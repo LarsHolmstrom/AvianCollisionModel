@@ -11,7 +11,8 @@ function collision_probability = ObliqueCollisionProbability(B, ... %Number of b
                                                              Vby, ...%Bird's velocity in the y-direction
                                                              y, ... %The y position as if you were looking directly downwind
                                                              z, ...
-                                                             plot_flag)
+                                                             plot_flag, ...
+                                                             rotor_pitch) % Degrees. Additional, wind determined rotation of the turbine blade
       
 %Convert theta to radians
 theta = theta_degrees/360*2*pi;
@@ -70,6 +71,13 @@ if r>R
     [chord_length,chord_angle] = ChordCharacteristics(R,maximum_blade_chord_length,blade_chord_length_at_hub,R);
 else
     [chord_length,chord_angle] = ChordCharacteristics(R,maximum_blade_chord_length,blade_chord_length_at_hub,r);
+end
+
+if nargin == 15
+    chord_angle = chord_angle + rotor_pitch;
+    if chord_angle > 90
+        chord_angle = 90;
+    end
 end
 
 assert(chord_angle <= 90 && chord_angle >=0);

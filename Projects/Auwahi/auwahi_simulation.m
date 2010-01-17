@@ -22,15 +22,33 @@
 % Load the auwahi constants
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 auwahi_constants
+load RotorRotationData
+turbine_data_wind_speed = data(:,1);
+turbine_data_rotor_speed = data(:,2);
+turbine_data_rotor_pitch = data(:,3);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Create the variable PDFs from the survey and site data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [bird_speed_pdf ...
  bird_direction_pdf ...
- wind_pdf ...
+ slow_wind_speed_pdf ...
+ fast_wind_speed_pdf ...
  bird_height_pdf] = ...
  GeneratePDFs(timeOfYear, turbineType, timeOfDay);
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % Rescale the data for the turbine type for rotor rotation calculations
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% switch turbineType
+%     case 'ge'
+%         
+%     case 'siemans'
+%     case 'vestas'
+%     otherwise
+%         error('Bad turbine type specified');
+% end
 
 switch typeOfBird
     case 'petrel'
@@ -52,26 +70,34 @@ bird_directions = nan(1,n_simulations);
 bird_heights = nan(1,n_simulations);
 bird_speeds = nan(1,n_simulations);
 
+bad_configurations = 0;
+
 for i_sim = 1:n_simulations
     if mod(i_sim,1000) == 0
         display(i_sim);
     end
     % Simulation wind parameters
-    [wind_direction wind_speed] = DrawFromPDF2(wind_pdf);
+    [wind_speed wind_direction] = GetWindSample(slow_wind_speed_pdf, fast_wind_speed_pdf);
+%     [wind_direction wind_speed] = DrawFromPDF2(wind_pdf);
     wind_specification.direction_degrees = mod(wind_direction+180,360);
     wind_specification.speed = wind_speed;
     
-    turbine_angular_velocity = 0;
-    if (wind_speed > turbine_specification.cut_in_wind_speed && ...
-        wind_speed < turbine_specification.cut_out_wind_speed)
-        fraction_of_operational_range = ...
-            (wind_speed - turbine_specification.cut_in_wind_speed) / ...
-            (turbine_specification.cut_out_wind_speed - turbine_specification.cut_in_wind_speed);
-        turbine_angular_velocity = ...
-            turbine_specification.min_rpm + ...
-            (turbine_specification.max_rpm - turbine_specification.min_rpm) * ...
-            fraction_of_operational_range;
+    % Do linear interpolation of the rotor speed vs wind speed curve after
+    % scaling for the maximum rpm of the specified turbine
+    scaled_turbine_rotor_speeds = turbine_specification.max_rpm * turbine_data_rotor_speed/max(turbine_data_rotor_speed);
+    turbine_angular_velocity = interp1(turbine_data_wind_speed,scaled_turbine_rotor_speeds,wind_speed);
+
+    if wind_speed < turbine_specification.cut_in_wind_speed
+        rotor_pitch = 0;
+    elseif wind_speed > turbine_specification.cut_out_wind_speed
+        rotor_pitch = 90;
+    else
+        fraction_of_max_wind_speed = (wind_speed - turbine_specification.cut_in_wind_speed) ...
+                                     /(turbine_specification.cut_out_wind_speed ...
+                                     - turbine_specification.cut_in_wind_speed);
+        rotor_pitch = 90 * fraction_of_max_wind_speed;
     end
+
     % Simulation bird path parameters
     bird_path_specification.direction_degrees = mod(DrawFromPDF(bird_direction_pdf.pdf,bird_direction_pdf.intervals)+180,360);
     bird_path_specification.height = DrawFromPDF(bird_height_pdf.pdf,bird_height_pdf.intervals);
@@ -140,7 +166,8 @@ for i_sim = 1:n_simulations
                                                        resolution, ... %Pixels/Meter
                                                        model_type, ...
                                                        y_dim, ... %Meters
-                                                       z_dim); %Meters
+                                                       z_dim, ...  %Meters
+                                                       rotor_pitch); %Degrees
 
         assert(length(collision_probability) == 1);
         if collision_probability < 0
@@ -150,6 +177,7 @@ for i_sim = 1:n_simulations
 
     end
     
+    bad_configurations = bad_configurations + sum(isnan(collision_probabilities));
     collision_probabilities = collision_probabilities(~isnan(collision_probabilities));
     
     if length(collision_probabilities) > 1
@@ -175,7 +203,7 @@ for i_sim = 1:n_simulations
 end
 toc
 mean_collision_probabilities = nanmean(all_collision_probabilities)
-bad_configurations = sum(isnan(all_collision_probabilities(:,1)))
+bad_configurations% = sum(isnan(all_collision_probabilities(:,1)))
 
 non_zero_probabilities = all_collision_probabilities(find(all_collision_probabilities(:,3) > 0));
 
