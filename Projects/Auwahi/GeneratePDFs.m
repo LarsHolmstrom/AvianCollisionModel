@@ -113,6 +113,9 @@ switch timeOfDay
     case 'evening'
         wind_data = wind_speed_data(:,19:22);
         workingSet = intersect(workingSet,iEvening);
+    case 'night'
+        wind_data = wind_speed_data(:,[1:3 23:24]);
+        workingSet = intersect(workingSet,iEvening);
     case 'morningAndEvening'
         wind_data = wind_speed_data(:,[5:8 19:22]);
         workingSet = intersect(workingSet,iEvening);
