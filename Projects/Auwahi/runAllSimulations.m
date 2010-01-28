@@ -1,5 +1,5 @@
 clear variables
-close all
+% close all
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simulation settings
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -25,7 +25,7 @@ fprintf(fid,'Turbine Type, Time of Year, Time of Day, Bird Species, 0.9, 0.95, 0
 
 turbineTypes = {'vestas'};
 timesOfYear = {'fall'};
-timesOfDay = {'evening'};
+timesOfDay = {'morning'};
 typesOfBird = {'shearwater'};
 
 all_probabilities = {};
