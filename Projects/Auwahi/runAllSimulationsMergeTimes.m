@@ -13,15 +13,15 @@ tower_avoidance_rate = 0.99;
 fid = fopen('SimulationResultsCombined.csv','w');
 fprintf(fid,'Turbine Type, Bird Species, 0.9, 0.95, 0.99\n');
 
-turbineTypes = {'ge','siemans','vestas'};
-timeOfYear = 'springAndFall';
-timeOfDay = 'morningAndEvening';
-typesOfBird = {'petrel','shearwater'};
-
-% turbineTypes = {'vestas'};
+% turbineTypes = {'ge','siemans','vestas'};
 % timeOfYear = 'springAndFall';
 % timeOfDay = 'morningAndEvening';
-% typesOfBird = {'shearwater'};
+% typesOfBird = {'petrel','shearwater'};
+
+turbineTypes = {'ge'};
+timeOfYear = 'springAndFall';
+timeOfDay = 'morning';
+typesOfBird = {'petrel'};
 
 all_probabilities = {};
 

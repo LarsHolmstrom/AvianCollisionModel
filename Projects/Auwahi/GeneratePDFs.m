@@ -6,7 +6,7 @@ function ...
  bird_height] = ...
  GeneratePDFs(season, turbineType, timeOfDay)
 
-plotPDFs = ~true;
+plotPDFs = true;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load and index the raw bird path data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -132,7 +132,7 @@ switch turbineType
         error('Badly specified turbineType string');
 end
 
-[wind_speed_pdf wind_speed_intervals] = ksdensity(wind_speed_data(:),'function','pdf');
+[wind_speed_pdf wind_speed_intervals] = ksdensity(wind_data(:),'function','pdf');
 wind_speed.pdf = wind_speed_pdf/sum(wind_speed_pdf);
 wind_speed.intervals = wind_speed_intervals;
 less_than_zero_index = find(wind_speed.intervals < 0,1,'last');

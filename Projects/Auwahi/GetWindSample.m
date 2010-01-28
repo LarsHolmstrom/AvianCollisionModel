@@ -1,7 +1,7 @@
 function [wind_speed wind_direction] = GetWindSample(slow_wind_pdf, fast_wind_pdf)
 
-chance_of_slow_wind = 0.1;
-chance_of_nee_wind = 0.35;
+chance_of_slow_wind = 0.15;
+chance_of_nee_wind = 0.40;
 roll = rand(1,1);
 if roll<chance_of_slow_wind
     wind_speed = DrawFromPDF(slow_wind_pdf.pdf, slow_wind_pdf.intervals);

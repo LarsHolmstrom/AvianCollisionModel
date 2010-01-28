@@ -23,10 +23,10 @@ fprintf(fid,'Turbine Type, Time of Year, Time of Day, Bird Species, 0.9, 0.95, 0
 % timesOfDay = {'morning','evening'};
 % typesOfBird = {'petrel','shearwater'};
 
-turbineTypes = {'vestas'};
-timesOfYear = {'fall'};
+turbineTypes = {'ge'};
+timesOfYear = {'springAndFall'};
 timesOfDay = {'evening'};
-typesOfBird = {'shearwater'};
+typesOfBird = {'petrel'};
 
 all_probabilities = {};
 

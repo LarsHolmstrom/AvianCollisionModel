@@ -39,7 +39,11 @@
 % rose(theta,16)
 
 load flight_heights
-figure;hist(flight_heights,20);
+figure;
+hist(flight_heights,20);
+h = findobj(gca,'Type','patch');
+set(h,'FaceColor',[0.7 0.7 0.7],'EdgeColor',[0.7 0.7 0.7])
+
 xlim([0 1000])
 [a b] = gamfit(flight_heights);
 p = gampdf(1:0.1:1000,a(1),a(2));
@@ -67,7 +71,74 @@ for i = 1:nSimulations
     wind_directions(i) = wind_direction;
 end
 
+load RotorRotationData
+turbine_data_wind_speed = data(:,1);
+turbine_data_rotor_speed = data(:,2);
+turbine_data_rotor_pitch = data(:,3);
+figure;
+ph = plot(turbine_data_wind_speed, turbine_data_rotor_speed);
+xlabel('Wind Speed (m/s)')
+ylabel('Rotor Speed (RPMs)');
+ylim([0 17]);
+set(ph,'LineWidth',3);
+PrintFigure('RotorSpeed','jpeg',5,3)
 
+
+uniform_dist = randn(1,1000)-1;
+[pdf intervals] = ksdensity(uniform_dist);
+pdf = pdf/sum(pdf);
+figure;
+plot(intervals,pdf)
+sum(pdf.*intervals)
+mean(uniform_dist)
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plot density of collision probability PDF
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+roc_90_avoidance = all_collision_probabilities(:,1);
+roc_90_avoidance_non_zero = roc_90_avoidance(find(roc_90_avoidance > 0));
+[roc_pdf roc_intervals] = ksdensity(roc_90_avoidance_non_zero,'function','pdf','support','positive','width',0.05);
+figure;
+semilogy(roc_intervals, roc_pdf);
+figure;hist(roc_90_avoidance_non_zero,100);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Create bird distribution figures
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+figure;
+subplot(1,2,1);
+load morningFigData
+p1 = plot(bird_speed.intervals, bird_speed.pdf,'r');
+set(p1,'LineWidth',2);
+foo = [min(bird_speed.intervals) max(bird_speed.intervals)];
+hold on;
+load eveningFigData
+p2 = plot(bird_speed.intervals, bird_speed.pdf);
+set(p2,'LineWidth',2);
+xlabel('Bird speed (m/s)');
+ylabel('Density');
+bar = [min(bird_speed.intervals) max(bird_speed.intervals)];
+xlim([min([foo bar]) max([foo bar])]);
+legend([p1 p2], {'Dawn', 'Dusk'})
+% AxisSet(16,'Garamond');
+
+subplot(1,2,2);
+load morningFigData
+p1 = plot(bird_direction.intervals, bird_direction.pdf,'r');
+set(p1,'LineWidth',2);
+hold on;
+load eveningFigData
+p2 = plot(bird_direction.intervals, bird_direction.pdf);
+set(p2,'LineWidth',2);
+xlabel('Bird bearing (Degrees Clockwise from North)');
+% ylabel('Density');
+xlim([min(bird_direction.intervals) max(bird_direction.intervals)]);
+% AxisSet(16,'Garamond');
+legend([p1 p2], {'Dawn', 'Dusk'},'location','NorthWest')
+
+PrintFigure('BirdPDFs','jpeg',8,5)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load and index the raw bird path data
