@@ -22,10 +22,18 @@
 % Load the auwahi constants
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 auwahi_constants
-load RotorRotationData
-turbine_data_wind_speed = data(:,1);
-turbine_data_rotor_speed = data(:,2);
-turbine_data_rotor_pitch = data(:,3);
+load RotorWindRelationship
+switch turbineType
+    case 'ge'
+        windRotorData = RotorWindRelationship{1}
+    case 'siemans'
+        windRotorData = RotorWindRelationship{2}
+    case 'vestas'
+        windRotorData = RotorWindRelationship{3}
+end
+turbine_data_wind_speed = windRotorData(:,1);
+turbine_data_rotor_speed = windRotorData(:,2);
+turbine_data_rotor_pitch = windRotorData(:,3);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Create the variable PDFs from the survey and site data
