@@ -1,9 +1,9 @@
 % cl
 
-% R = 35.25;
-% max_chord_length = 1.5;
-R = 10;
+R = 35.25;
 max_chord_length = 1.5;
+% R = 10;
+% max_chord_length = 1.5;
 chord_length_at_hub = 0.8;
 samplePoints = linspace(0,R,1000);
 [c beta] = ChordCharacteristics(R,max_chord_length,chord_length_at_hub,samplePoints);

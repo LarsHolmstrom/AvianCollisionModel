@@ -88,56 +88,61 @@ tower(15).lat = 20.5898943;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Specify the tubine model. This also affects the wind farm layout
-turbine_model = 3;
+switch turbineType
+    case 'ge' % GE 1.5 SE
+        tower_layout = 1:15;
+        % Static turbine specification
+        turbine_specification.tower_height = 64.7; % meters
+        turbine_specification.turbine_radius = 35.25; % meters
+        turbine_specification.hub_radius = 4; % meters
+        turbine_specification.tower_base_diameter = 3.5; % meters
+        turbine_specification.tower_top_diameter = 3.5; % meters
+        turbine_specification.n_blades = 3;
+        turbine_specification.maximum_blade_chord_length = 1.5; % meters
+        turbine_specification.blade_chord_length_at_hub = 0.8;
+        turbine_specification.axial_induction = 0.25; % meters
+        turbine_specification.cut_in_wind_speed = 4; %m/s
+        turbine_specification.cut_out_wind_speed = 25; %m/s
+        turbine_specification.min_rpm = 11.1; %rpms
+        turbine_specification.max_rpm = 22.2; %rpms
+    case 'siemans' % Siemens SWT 2.3-101
+        tower_layout = 6:15;
+        % Static turbine specification
+        turbine_specification.tower_height = 80; % meters
+        turbine_specification.turbine_radius = 50.5; % meters
+        turbine_specification.hub_radius = 3.8; % meters
+        turbine_specification.tower_base_diameter = 4.2; % meters
+        turbine_specification.tower_top_diameter = 4.2; % meters
+        turbine_specification.n_blades = 3;
+        turbine_specification.maximum_blade_chord_length = 3.4; % meters
+        turbine_specification.blade_chord_length_at_hub = 2.4;
+        turbine_specification.axial_induction = 0.25; % meters
+        turbine_specification.cut_in_wind_speed = 4; %m/s
+        turbine_specification.cut_out_wind_speed = 25; %m/s
+        turbine_specification.min_rpm = 6; %rpms
+        turbine_specification.max_rpm = 16; %rpms
+    case 'vestas' % Vestas V90
+        tower_layout = 8:15;
+        % Static turbine specification
+        turbine_specification.tower_height = 80; % meters
+        turbine_specification.turbine_radius = 45; % meters
+        turbine_specification.hub_radius = 4.05; % meters
+        turbine_specification.tower_base_diameter = 3.65; % meters
+        turbine_specification.tower_top_diameter = 3.65; % meters
+        turbine_specification.n_blades = 3;
+        turbine_specification.maximum_blade_chord_length = 3.512; % meters
+        turbine_specification.blade_chord_length_at_hub = 1.88;
+        turbine_specification.axial_induction = 0.25; % meters
+        turbine_specification.cut_in_wind_speed = 4; %m/s
+        turbine_specification.cut_out_wind_speed = 25; %m/s
+        turbine_specification.min_rpm = 8.6; %rpms
+        turbine_specification.max_rpm = 18.4; %rpms
+    otherwise
+        error('Bad turbine specification');
+end
 
-if turbine_model == 0 % GE 1.5 SE
-    tower_layout = 1:15; 
-    % Static turbine specification
-    turbine_specification.tower_height = 64.7; % meters
-    turbine_specification.turbine_radius = 35.25; % meters
-    turbine_specification.hub_radius = 4; % meters
-    turbine_specification.tower_base_diameter = 3.5; % meters
-    turbine_specification.tower_top_diameter = 3.5; % meters
-    turbine_specification.n_blades = 3;
-    turbine_specification.maximum_blade_chord_length = 1.5; % meters
-    turbine_specification.blade_chord_length_at_hub = 0.8;
-    turbine_specification.axial_induction = 0.25; % meters
-    turbine_specification.cut_in_wind_speed = 4; %m/s
-    turbine_specification.cut_out_wind_speed = 25; %m/s
-    turbine_specification.min_rpm = 11.1; %rpms
-    turbine_specification.max_rpm = 22.2; %rpms
-elseif turbine_model == 1 % Siemens SWT 2.3-101
-    tower_layout = 6:15;
-    % Static turbine specification
-    turbine_specification.tower_height = 80; % meters
-    turbine_specification.turbine_radius = 50.5; % meters
-    turbine_specification.hub_radius = 3.8; % meters
-    turbine_specification.tower_base_diameter = 4.2; % meters
-    turbine_specification.tower_top_diameter = 4.2; % meters
-    turbine_specification.n_blades = 3;
-    turbine_specification.maximum_blade_chord_length = 3.4; % meters
-    turbine_specification.blade_chord_length_at_hub = 2.4;
-    turbine_specification.axial_induction = 0.25; % meters
-    turbine_specification.cut_in_wind_speed = 4; %m/s
-    turbine_specification.cut_out_wind_speed = 25; %m/s
-    turbine_specification.min_rpm = 6; %rpms
-    turbine_specification.max_rpm = 16; %rpms
-else % Vestas V90
-    tower_layout = 8:15;
-    % Static turbine specification
-    turbine_specification.tower_height = 80; % meters
-    turbine_specification.turbine_radius = 45; % meters
-    turbine_specification.hub_radius = 4.05; % meters
-    turbine_specification.tower_base_diameter = 3.65; % meters
-    turbine_specification.tower_top_diameter = 3.65; % meters
-    turbine_specification.n_blades = 3;
-    turbine_specification.maximum_blade_chord_length = 3.512; % meters
-    turbine_specification.blade_chord_length_at_hub = 1.88;
-    turbine_specification.axial_induction = 0.25; % meters
-    turbine_specification.cut_in_wind_speed = 4; %m/s
-    turbine_specification.cut_out_wind_speed = 25; %m/s
-    turbine_specification.min_rpm = 8.6; %rpms
-    turbine_specification.max_rpm = 18.4; %rpms
+if use_ge_configuration_only % This is the same as the GE 1.5 SE configuration below
+    tower_layout = 1:15;
 end
 
 jTower = 0;
@@ -148,36 +153,49 @@ for iTower = tower_layout
 end
 
 % Specify the boundaries for possible flight path intersects
-if turbine_model == 0 % GE 1.5 SE
-    bounding_polygon_x = [[windfarm_specification.tower_locations(1:8).x] - turbine_specification.turbine_radius ...
-                          [windfarm_specification.tower_locations(fliplr(9:15)).x] + turbine_specification.turbine_radius ...
-                          [windfarm_specification.tower_locations(1).x] - turbine_specification.turbine_radius];
-    bounding_polygon_y = [[windfarm_specification.tower_locations(1).y] + turbine_specification.turbine_radius ...
-                          [windfarm_specification.tower_locations(2:7).y] ...
-                          [windfarm_specification.tower_locations([8 15]).y] - turbine_specification.turbine_radius ...
-                          [windfarm_specification.tower_locations(fliplr(10:14)).y] ...
-                          [windfarm_specification.tower_locations([9 1]).y] + turbine_specification.turbine_radius];
-elseif turbine_model == 1 % Siemens SWT 2.3-101
-    bounding_polygon_x = [[windfarm_specification.tower_locations(1:3).x] - turbine_specification.turbine_radius ...
-                          [windfarm_specification.tower_locations(10).x] ...
-                          [windfarm_specification.tower_locations(fliplr(4:10)).x] + turbine_specification.turbine_radius ...
-                          [windfarm_specification.tower_locations(4).x] ...
-                          [windfarm_specification.tower_locations(1).x] - turbine_specification.turbine_radius];
-    bounding_polygon_y = [[windfarm_specification.tower_locations(1).y] + turbine_specification.turbine_radius ...
-                          [windfarm_specification.tower_locations(2).y] ...
-                          [windfarm_specification.tower_locations([3 10 10]).y] - turbine_specification.turbine_radius ...
-                          [windfarm_specification.tower_locations(fliplr(5:9)).y] ...
-                          [windfarm_specification.tower_locations([4 4 1]).y] + turbine_specification.turbine_radius];
-else % Vestas V90
-    bounding_polygon_x = [[windfarm_specification.tower_locations(1).x] - turbine_specification.turbine_radius ...
-                          [windfarm_specification.tower_locations(8).x] ...
-                          [windfarm_specification.tower_locations(fliplr(2:8)).x] + turbine_specification.turbine_radius ...
-                          [windfarm_specification.tower_locations(2).x]...
-                          [windfarm_specification.tower_locations(1).x] - turbine_specification.turbine_radius];
-    bounding_polygon_y = [[windfarm_specification.tower_locations(1).y] - turbine_specification.turbine_radius ...
-                          [windfarm_specification.tower_locations([8 8]).y] - turbine_specification.turbine_radius ...
-                          [windfarm_specification.tower_locations(fliplr(3:7)).y] ...
-                          [windfarm_specification.tower_locations([2 2 1]).y] + turbine_specification.turbine_radius];
+if use_ge_configuration_only % This is the same as the GE 1.5 SE configuration below
+        bounding_polygon_x = [[windfarm_specification.tower_locations(1:8).x] - turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(fliplr(9:15)).x] + turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(1).x] - turbine_specification.turbine_radius];
+        bounding_polygon_y = [[windfarm_specification.tower_locations(1).y] + turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(2:7).y] ...
+                              [windfarm_specification.tower_locations([8 15]).y] - turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(fliplr(10:14)).y] ...
+                              [windfarm_specification.tower_locations([9 1]).y] + turbine_specification.turbine_radius];
+else switch turbineType
+    case 'ge' % GE 1.5 SE
+        bounding_polygon_x = [[windfarm_specification.tower_locations(1:8).x] - turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(fliplr(9:15)).x] + turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(1).x] - turbine_specification.turbine_radius];
+        bounding_polygon_y = [[windfarm_specification.tower_locations(1).y] + turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(2:7).y] ...
+                              [windfarm_specification.tower_locations([8 15]).y] - turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(fliplr(10:14)).y] ...
+                              [windfarm_specification.tower_locations([9 1]).y] + turbine_specification.turbine_radius];
+                      
+    case 'siemans' % Siemens SWT 2.3-101
+        bounding_polygon_x = [[windfarm_specification.tower_locations(1:3).x] - turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(10).x] ...
+                              [windfarm_specification.tower_locations(fliplr(4:10)).x] + turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(4).x] ...
+                              [windfarm_specification.tower_locations(1).x] - turbine_specification.turbine_radius];
+        bounding_polygon_y = [[windfarm_specification.tower_locations(1).y] + turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(2).y] ...
+                              [windfarm_specification.tower_locations([3 10 10]).y] - turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(fliplr(5:9)).y] ...
+                              [windfarm_specification.tower_locations([4 4 1]).y] + turbine_specification.turbine_radius];
+    case 'vestas' % Vestas V90
+        bounding_polygon_x = [[windfarm_specification.tower_locations(1).x] - turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(8).x] ...
+                              [windfarm_specification.tower_locations(fliplr(2:8)).x] + turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(2).x]...
+                              [windfarm_specification.tower_locations(1).x] - turbine_specification.turbine_radius];
+        bounding_polygon_y = [[windfarm_specification.tower_locations(1).y] - turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations([8 8]).y] - turbine_specification.turbine_radius ...
+                              [windfarm_specification.tower_locations(fliplr(3:7)).y] ...
+                              [windfarm_specification.tower_locations([2 2 1]).y] + turbine_specification.turbine_radius];
+    otherwise error('Bad turbine specification');
+    end
 end
 
 

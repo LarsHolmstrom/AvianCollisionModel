@@ -42,7 +42,7 @@ if abs(theta) >= pi/2
 %     error_string = {'Improbable input parameters. Bird would be flying backwards.',...
 %                     'Check Wind & Bird Speeds and Directions'};
 %     errordlg(error_string,'Error');
-    warning('Improbable input parameters. Bird would be flying backwards.');
+    display('Improbable input parameters. Bird would be flying backwards.');
     collision_probability = nan;
     return
 end
@@ -73,18 +73,24 @@ else
     [chord_length,chord_angle] = ChordCharacteristics(R,maximum_blade_chord_length,blade_chord_length_at_hub,r);
 end
 
+
 if nargin == 15
     chord_angle = chord_angle + rotor_pitch;
-    if chord_angle > 90
-        chord_angle = 90;
-    end
 end
 
-assert(chord_angle <= 90 && chord_angle >=0);
-
+if chord_angle > 90
+    assert(chord_angle <= 180);
+    amount_over = chord_angle - 90;
+    positive_projection = chord_angle - amount_over;
+    chord_angle = positive_projection;
+end
+    
 chord_angle = chord_angle/360*2*pi;
 blade_depth = abs(chord_length*sin(chord_angle));
 blade_width = abs(chord_length*cos(chord_angle)); %Tangent to rotation
+
+assert(chord_angle <= pi/2 && chord_angle >=0);
+
 % blade_width_y = abs(blade_width*sin(psi));
 blade_width_y = abs(blade_width/sin(psi));
 blade_arc_width = 2*atan(blade_width/2/r);

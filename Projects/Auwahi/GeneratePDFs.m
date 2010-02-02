@@ -6,7 +6,7 @@ function ...
  bird_height] = ...
  GeneratePDFs(season, turbineType, timeOfDay)
 
-plotPDFs = true;
+plotPDFs = ~true;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load and index the raw bird path data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

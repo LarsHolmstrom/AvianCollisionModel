@@ -25,11 +25,11 @@ auwahi_constants
 load RotorWindRelationship
 switch turbineType
     case 'ge'
-        windRotorData = RotorWindRelationship{1}
+        windRotorData = RotorWindRelationship{1};
     case 'siemans'
-        windRotorData = RotorWindRelationship{2}
+        windRotorData = RotorWindRelationship{2};
     case 'vestas'
-        windRotorData = RotorWindRelationship{3}
+        windRotorData = RotorWindRelationship{3};
 end
 turbine_data_wind_speed = windRotorData(:,1);
 turbine_data_rotor_speed = windRotorData(:,2);
@@ -92,19 +92,28 @@ for i_sim = 1:n_simulations
     
     % Do linear interpolation of the rotor speed vs wind speed curve after
     % scaling for the maximum rpm of the specified turbine
-    scaled_turbine_rotor_speeds = turbine_specification.max_rpm * turbine_data_rotor_speed/max(turbine_data_rotor_speed);
-    turbine_angular_velocity = interp1(turbine_data_wind_speed,scaled_turbine_rotor_speeds,wind_speed);
-
-    if wind_speed < turbine_specification.cut_in_wind_speed
-        rotor_pitch = 0;
-    elseif wind_speed > turbine_specification.cut_out_wind_speed
-        rotor_pitch = 90;
+%     scaled_turbine_rotor_speeds = turbine_specification.max_rpm * turbine_data_rotor_speed/max(turbine_data_rotor_speed);
+   
+    if wind_speed > max(turbine_data_wind_speed)
+        turbine_angular_velocity = turbine_data_rotor_speed(end);
+        rotor_pitch = turbine_data_rotor_pitch(end);
     else
-        fraction_of_max_wind_speed = (wind_speed - turbine_specification.cut_in_wind_speed) ...
-                                     /(turbine_specification.cut_out_wind_speed ...
-                                     - turbine_specification.cut_in_wind_speed);
-        rotor_pitch = 90 * fraction_of_max_wind_speed;
+        turbine_angular_velocity = interp1(turbine_data_wind_speed,turbine_data_rotor_speed,wind_speed);
+        rotor_pitch = interp1(turbine_data_wind_speed,turbine_data_rotor_pitch,wind_speed);
     end
+
+%     if wind_speed < turbine_specification.cut_in_wind_speed
+%         rotor_pitch = 0;
+%     elseif wind_speed > turbine_specification.cut_out_wind_speed
+%         rotor_pitch = 90;
+%     else
+        
+        
+%         fraction_of_max_wind_speed = (wind_speed - turbine_specification.cut_in_wind_speed) ...
+%                                      /(turbine_specification.cut_out_wind_speed ...
+%                                      - turbine_specification.cut_in_wind_speed);
+%         rotor_pitch = 90 * fraction_of_max_wind_speed;
+%     end
 
     % Simulation bird path parameters
     bird_path_specification.direction_degrees = mod(DrawFromPDF(bird_direction_pdf.pdf,bird_direction_pdf.intervals)+180,360);
