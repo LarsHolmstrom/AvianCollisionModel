@@ -124,16 +124,18 @@ switch timeOfDay
         error('Badly specified timeOfDay string');
 end
 
-switch turbineType
-    case 'ge'
-        workingSet = intersect(workingSet,iGE);
-    case 'siemans'
-        workingSet = intersect(workingSet,iSiemans);
-    case 'vestas'
-        workingSet = intersect(workingSet,iVestas);
-    otherwise
-        error('Badly specified turbineType string');
-end
+% Assumption of uniform distribution probably means that we should use
+% all bird paths (no filterin)
+% switch turbineType
+%     case 'ge'
+%         workingSet = intersect(workingSet,iGE);
+%     case 'siemans'
+%         workingSet = intersect(workingSet,iSiemans);
+%     case 'vestas'
+%         workingSet = intersect(workingSet,iVestas);
+%     otherwise
+%         error('Badly specified turbineType string');
+% end
 
 [wind_speed_pdf wind_speed_intervals] = ksdensity(wind_data(:),'function','pdf');
 wind_speed.pdf = wind_speed_pdf/sum(wind_speed_pdf);
@@ -215,6 +217,18 @@ if plotPDFs
 %     xlabel('Wind Direction (Degrees Clockwise from North)');
 %     ylabel('Wind Speed (m/s)');
 %     colorbar
+
+    figure;
+    plot(slow_wind_speed.intervals, slow_wind_speed.pdf);
+    xlabel('Wind speed slow (m/s)');
+    ylabel('Density');
+    xlim([min(slow_wind_speed.intervals) max(slow_wind_speed.intervals)]);
+    
+    figure;
+    plot(fast_wind_speed.intervals, fast_wind_speed.pdf);
+    xlabel('Bird speed fast (m/s)');
+    ylabel('Density');
+    xlim([min(fast_wind_speed.intervals) max(fast_wind_speed.intervals)]);
     
     figure;
     plot(bird_speed.intervals, bird_speed.pdf);

@@ -4,7 +4,7 @@ clear variables
 % Simulation settings
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 plot_stuff = ~true;
-n_simulations = 10000;
+n_simulations = 250000;
 % n_simulations = 100;
 figure_handle = nan;
 use_ge_configuration_only = ~true;
@@ -15,16 +15,16 @@ tower_avoidance_rate = 0.99;
 fid = fopen('SimulationResults.csv','w');
 fprintf(fid,'Turbine Type, Time of Year, Time of Day, Bird Species, 0.9, 0.95, 0.99\n');
 
-% turbineTypes = {'ge','siemans','vestas'};
-% timesOfYear = {'spring','fall'};
-% timesOfDay = {'morning','evening'};
-% typesOfBird = {'petrel','shearwater'};
-
 turbineTypes = {'ge','siemans','vestas'};
-% turbineTypes = {'vestas','siemans','ge'};
-timesOfYear = {'spring'};
-timesOfDay = {'morning'};
-typesOfBird = {'petrel'};
+timesOfYear = {'spring','fall'};
+timesOfDay = {'morning','evening'};
+typesOfBird = {'petrel','shearwater'};
+
+% % turbineTypes = {'siemans','ge','vestas'};
+% turbineTypes = {'siemans','siemans','siemans'};
+% timesOfYear = {'spring'};
+% timesOfDay = {'morning'};
+% typesOfBird = {'petrel'};
 
 all_probabilities = {};
 
@@ -39,8 +39,18 @@ for iTurbineType = 1:length(turbineTypes)
                 iRun = iRun + 1;
                 typeOfBird = typesOfBird{iTypeOfBird};
                 display([turbineType ' ' timeOfYear ' ' timeOfDay ' ' typeOfBird]);
-                auwahi_simulation
+                all_collision_probabilities = auwahi_simulation(turbineType, ...
+                                                                timeOfYear, ...
+                                                                timeOfDay, ...
+                                                                typeOfBird, ...
+                                                                use_ge_configuration_only, ...
+                                                                n_simulations, ...
+                                                                rotor_avoidance_rates, ...
+                                                                tower_avoidance_rate, ...
+                                                                figure_handle, ...
+                                                                plot_stuff);
                 all_probabilities{iRun} = all_collision_probabilities;
+                mean_collision_probabilities = nanmean(all_collision_probabilities);
                 fprintf(fid, '%s, %s, %s, %s, %f, %f, %f\n', turbineType, timeOfYear, timeOfDay, typeOfBird, mean_collision_probabilities(1), mean_collision_probabilities(2), mean_collision_probabilities(3));
             end
         end

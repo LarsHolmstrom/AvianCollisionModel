@@ -19,7 +19,7 @@ Vbx = bird_speed*cos(bird_downwind_relative_direction_radians) - wind_speed;
 % This is equivalent to the bird's wind relative velocity in the
 % y-direction because there is no wind in the y-direction.
 Vby = bird_speed*sin(bird_downwind_relative_direction_radians);
-% Bird's velocity at the turbine.
+% Bird's velocity in the x direction at the turbine, taking the axial induction into account
 Vx = Vbx+(1-axial_induction)*wind_speed;
 % The bird's angle of orientation relative to the rotor plane.
 angle_of_orientation = atan(Vby/Vbx); %FIXME, the axial induction factor should be included in this
