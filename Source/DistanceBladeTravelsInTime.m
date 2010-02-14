@@ -59,4 +59,8 @@ else %Bind psi between 0 and -pi
 end
 
 y_finish = z/tan(final_psi);
+if isnan(y_finish)
+    assert(final_psi == 0);
+    y_finish = y_start;
+end
 % distance = y_finish - y_start;

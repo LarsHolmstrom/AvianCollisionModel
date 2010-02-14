@@ -94,7 +94,7 @@ switch turbineType
         % Static turbine specification
         turbine_specification.tower_height = 64.7; % meters
         turbine_specification.turbine_radius = 35.25; % meters
-        turbine_specification.hub_radius = 4; % meters
+        turbine_specification.hub_radius = 2; % meters
         turbine_specification.tower_base_diameter = 3.5; % meters
         turbine_specification.tower_top_diameter = 3.5; % meters
         turbine_specification.n_blades = 3;
@@ -110,7 +110,7 @@ switch turbineType
         % Static turbine specification
         turbine_specification.tower_height = 80; % meters
         turbine_specification.turbine_radius = 50.5; % meters
-        turbine_specification.hub_radius = 3.8; % meters
+        turbine_specification.hub_radius = 1.9; % meters
         turbine_specification.tower_base_diameter = 4.2; % meters
         turbine_specification.tower_top_diameter = 4.2; % meters
         turbine_specification.n_blades = 3;
@@ -126,7 +126,7 @@ switch turbineType
         % Static turbine specification
         turbine_specification.tower_height = 80; % meters
         turbine_specification.turbine_radius = 45; % meters
-        turbine_specification.hub_radius = 4.05; % meters
+        turbine_specification.hub_radius = 2.02; % meters
         turbine_specification.tower_base_diameter = 3.65; % meters
         turbine_specification.tower_top_diameter = 3.65; % meters
         turbine_specification.n_blades = 3;

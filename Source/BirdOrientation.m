@@ -24,7 +24,7 @@ Vx = Vbx+(1-axial_induction)*wind_speed;
 % The bird's angle of orientation relative to the rotor plane.
 angle_of_orientation = atan(Vby/Vbx); %FIXME, the axial induction factor should be included in this
 if (Vbx < 0)
-    angle_of_orientation = angle_of_orientation + pi;
+    angle_of_orientation = angle_of_orientation - pi;
 end
 angle_of_orientation_degrees = angle_of_orientation/2/pi*360;
 

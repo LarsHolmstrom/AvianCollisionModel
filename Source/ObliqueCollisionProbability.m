@@ -38,13 +38,27 @@ if (Vbx < 0)
     upwind = true;
 end
 
+%Constrain theta to be -pi <= theta <= pi
+theta = rem(theta,2*pi);
+if theta > pi
+    theta = theta - 2*pi;
+elseif theta < -pi
+    theta = theta + 2*pi;
+end
+
 if abs(theta) >= pi/2
+    if theta >= pi/2
+        theta = pi/2;
+    else
+        theta = -pi/2;
+    end
+    display('Enforcing maximum angle of rotation');
 %     error_string = {'Improbable input parameters. Bird would be flying backwards.',...
 %                     'Check Wind & Bird Speeds and Directions'};
 %     errordlg(error_string,'Error');
-    display('Improbable input parameters. Bird would be flying backwards.');
-    collision_probability = nan;
-    return
+%     display('Improbable input parameters. Bird would be flying backwards.');
+%     collision_probability = nan;
+%     return
 end
 
 %Constrain theta to be -pi <= theta <= pi
@@ -309,10 +323,16 @@ if least_rotated_rotor_y ~= most_rotated_rotor_y
     %Calculate the largest psi and the smallest psi that can still clip the bird.
     %#######################################################
     most_rotated_psi = atan(z/most_rotated_rotor_y);
+    if isnan(most_rotated_psi)
+        most_rotated_psi = 0;
+    end
     if (most_rotated_psi < 0)
         most_rotated_psi = most_rotated_psi + pi;
     end
     least_rotated_psi = atan(z/least_rotated_rotor_y);
+    if isnan(least_rotated_psi)
+        least_rotated_psi = 0;
+    end
     if (least_rotated_psi < 0)
         least_rotated_psi = least_rotated_psi + pi;
     end
@@ -326,10 +346,16 @@ if least_rotated_rotor_y ~= most_rotated_rotor_y
     %it takes to pass from the front rotor plane to the back rotor plane.
     %The addition is here because omega is negative.
     most_rotated_y_drift = atan(z/(intercept_y_nose-y_drift_back_rotor_plane));
+    if isnan(most_rotated_y_drift) %Possible if intercept_y_nose is zero and the bird does not drift
+        most_rotated_y_drift = 0;
+    end
     if (most_rotated_y_drift < 0)
         most_rotated_y_drift = most_rotated_y_drift + pi;
     end
     least_rotated_y_drift = atan(z/(intercept_y_nose+y_drift_back_rotor_plane));
+    if isnan(least_rotated_y_drift) %Possible if intercept_y_nose is zero and the bird does not drift
+        least_rotated_y_drift = 0;
+    end
     if (least_rotated_y_drift < 0)
         least_rotated_y_drift = least_rotated_y_drift + pi;
     end
@@ -566,8 +592,6 @@ if plot_flag
     ylim(y_plot_limits)
     zlim(z_plot_limits)
 end
-
-% foo = 1;
 
 
 

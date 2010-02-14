@@ -182,10 +182,13 @@ else
         xlabel('y');
         ylabel('z');
         caxis([0 1]);
-        colorbar
+%         colorbar
 %         title({'Collision Probability Contours For an Individual Turbine',...
 %                ['Mean Collision Probability: ' num2str(mean_probability)],...
 %                ['Mean Rotation Adjusted Collision Probability: ' num2str(mean_aperture_probability)]});
+        title({['Mean Collision Probability: ' num2str(mean_probability)],...
+               ['Total Area: ' num2str(pi*R^2) ' m^2'], ...
+               ['Product: ' num2str(mean_probability*pi*R^2)]});
         PrintFigure('Color_Turbine','epsc2',4.1,3.1);   
         % Plot black and white figure
         figure;
@@ -199,9 +202,9 @@ else
         set(h,'lineWidth',2);
         xlabel('y');
         ylabel('z');
-%         title({'Collision Probability Contours For an Individual Turbine',...
-%                ['Mean Collision Probability: ' num2str(mean_probability)],...
-%                ['Mean Rotation Adjusted Collision Probability: ' num2str(mean_aperture_probability)]});
+        title({'Collision Probability Contours For an Individual Turbine',...
+               ['Mean Collision Probability: ' num2str(mean_probability)],...
+               ['Mean Rotation Adjusted Collision Probability: ' num2str(mean_aperture_probability)]});
         PrintFigure('BW_Turbine','epsc2',3.7,3.5);    
     end
     return_probabilities = oblique_probabilities;

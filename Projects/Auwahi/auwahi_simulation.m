@@ -94,8 +94,8 @@ for i_sim = 1:n_simulations
     end
 
 
-    while true
-        % Iterate over draws from the PDFs until we get a reasonable flight path
+%     while true
+%         % Iterate over draws from the PDFs until we get a reasonable flight path
         
         % Simulation bird path parameters
         bird_path_specification.direction_degrees = mod(DrawFromPDF(bird_direction_pdf.pdf,bird_direction_pdf.intervals)+180,360);
@@ -109,37 +109,39 @@ for i_sim = 1:n_simulations
         bird_heights(i_sim) = bird_path_specification.height;
         bird_speeds(i_sim) = bird_path_specification.speed;
 
-%         break
-        %-------------------------------------------------------------------
-        % Check to make sure that the flight path is reasonable
-        %-------------------------------------------------------------------
-        [angle_of_orientation_degrees ...
-         bird_downwind_relative_direction_radians ...
-         Vbx ...
-         Vby ...
-         Vx] = BirdOrientation(bird_path_specification.direction_degrees, ...
-                               bird_path_specification.speed, ...
-                               wind_specification.direction_degrees, ...
-                               wind_specification.speed, ...
-                               0);
-                           
-        %Convert theta to radians
-        theta = angle_of_orientation_degrees/360*2*pi;
-        
-        upwind = false;
-        if (Vx < 0)
-            %     assert(theta >= pi); % Flying backwards
-            Vx = abs(Vx);
-            %     theta = mod(theta+pi,pi);
-            theta = -(theta-pi);
-            upwind = true;
-        end
-        if abs(theta) < pi/2
-            break;
-        else
-            bad_configurations = bad_configurations + 1;
-        end
-    end
+%         %-------------------------------------------------------------------
+%         % Check to make sure that the flight path is reasonable
+%         %-------------------------------------------------------------------
+%         [angle_of_orientation_degrees ...
+%          bird_downwind_relative_direction_radians ...
+%          Vbx ...
+%          Vby ...
+%          Vx] = BirdOrientation(bird_path_specification.direction_degrees, ...
+%                                bird_path_specification.speed, ...
+%                                wind_specification.direction_degrees, ...
+%                                wind_specification.speed, ...
+%                                0)
+%                            
+%         %Convert theta to radians
+%         theta = angle_of_orientation_degrees/360*2*pi;
+%         
+%         upwind = false;
+%         if (Vx < 0)
+%             theta
+%             assert(abs(theta) >= pi/2); % Flying backwards
+%             Vx = abs(Vx);
+%             %     theta = mod(theta+pi,pi);
+%             theta = -(theta-pi);
+%             upwind = true;
+%         else
+%             assert(abs(theta) < pi/2);
+%         end
+%         if abs(theta) < pi/2
+%             break;
+%         else
+%             bad_configurations = bad_configurations + 1;
+%         end
+%     end
     %-------------------------------------------------------------------
     
     % Pick bird paths that pass through the wind farm area

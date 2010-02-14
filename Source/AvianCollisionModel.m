@@ -22,7 +22,7 @@ function varargout = AvianCollisionModel(varargin)
 
 % Edit the above text to modify the response to help AvianCollisionModel
 
-% Last Modified by GUIDE v2.5 27-Apr-2009 15:58:26
+% Last Modified by GUIDE v2.5 13-Feb-2010 17:16:55
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1128,6 +1128,7 @@ turbine_radius = str2double(get(handles.turbine_radius,'string'));
 hub_radius = str2double(get(handles.hub_radius,'string'));
 angular_velocity = str2double(get(handles.angular_velocity,'string'));
 chord_length = str2double(get(handles.chord_length,'string'));
+chord_length_at_hub = str2double(get(handles.chord_length_at_hub,'string'));
 
 %############################################################
 % Get bird variables
@@ -1221,6 +1222,7 @@ if plot_type == 1
                                                                  hub_radius, ...
                                                                  angular_velocity, ...
                                                                  chord_length, ...
+                                                                 chord_length_at_hub, ...
                                                                  induction, ...
                                                                  wind_speed, ...
                                                                  wind_direction, ...
@@ -1237,6 +1239,7 @@ elseif plot_type == 2
                                                                  hub_radius, ...
                                                                  angular_velocity, ...
                                                                  chord_length, ...
+                                                                 chord_length_at_hub, ...
                                                                  induction, ...
                                                                  wind_speed, ...
                                                                  wind_direction, ...
@@ -1312,6 +1315,7 @@ index = get(hObject,'Value');
 %2 = Gamesa G80
 %3 = Vestas V80
 %4 = Vestas V90
+%5 = Siemens WT 2.3-10
 
 switch index
     case 1 
@@ -1320,44 +1324,58 @@ switch index
         set(handles.hub_radius,'string','2');
         set(handles.angular_velocity,'string','16.6');
         set(handles.chord_length,'string','1.5');
+        set(handles.chord_length_at_hub,'string','0.8');
         set(handles.tower_height,'string','64.7');
         set(handles.tower_base_diameter,'string','3.5');
         set(handles.tower_hub_diameter,'string','2');
-        set(handles.tower_max_diameter,'string','3.5');
-        set(handles.tower_widest_height,'string','0');
+%         set(handles.tower_max_diameter,'string','3.5');
+%         set(handles.tower_widest_height,'string','0');
     case 2 
         set(handles.n_rotors,'string', '3');
         set(handles.turbine_radius,'string','40');
         set(handles.hub_radius,'string','1.8');
         set(handles.angular_velocity,'string','14');
         set(handles.chord_length,'string','3.36');
+        set(handles.chord_length_at_hub,'string','1.88');
         set(handles.tower_height,'string','78');
         set(handles.tower_base_diameter,'string','4.038');
         set(handles.tower_hub_diameter,'string','2.314');
-        set(handles.tower_max_diameter,'string','4.038');
-        set(handles.tower_widest_height,'string','0');
+%         set(handles.tower_max_diameter,'string','4.038');
+%         set(handles.tower_widest_height,'string','0');
     case 3 
         set(handles.n_rotors,'string', '3');
         set(handles.turbine_radius,'string','40');
         set(handles.hub_radius,'string','2.02');
         set(handles.angular_velocity,'string','14');
         set(handles.chord_length,'string','3.52');
+        set(handles.chord_length_at_hub,'string','1.88');
         set(handles.tower_height,'string','78');
         set(handles.tower_base_diameter,'string','3.65');
         set(handles.tower_hub_diameter,'string','2.3');
-        set(handles.tower_max_diameter,'string','3.65');
-        set(handles.tower_widest_height,'string','0');
+%         set(handles.tower_max_diameter,'string','3.65');
+%         set(handles.tower_widest_height,'string','0');
     case 4
         set(handles.n_rotors,'string', '3');
         set(handles.turbine_radius,'string','45');
         set(handles.hub_radius,'string','2.02');
         set(handles.angular_velocity,'string','14.15');
         set(handles.chord_length,'string','3.512');
+        set(handles.chord_length_at_hub,'string','1.88');
         set(handles.tower_height,'string','80');
         set(handles.tower_base_diameter,'string','3.65');
         set(handles.tower_hub_diameter,'string','2.3');
-        set(handles.tower_max_diameter,'string','3.65');
-        set(handles.tower_widest_height,'string','0');
+%         set(handles.tower_max_diameter,'string','3.65');
+%         set(handles.tower_widest_height,'string','0');
+    case 5 %Siemens WT2.3-10
+        set(handles.n_rotors,'string', '3');
+        set(handles.turbine_radius,'string','50.5');
+        set(handles.hub_radius,'string','1.9');
+        set(handles.angular_velocity,'string','16');
+        set(handles.chord_length,'string','3.4');
+        set(handles.chord_length_at_hub,'string','2.4');
+        set(handles.tower_height,'string','80');
+        set(handles.tower_base_diameter,'string','4.2');
+        set(handles.tower_hub_diameter,'string','4.2');
 end
     
 
@@ -1526,6 +1544,31 @@ function flight_corridor_width_Callback(hObject, eventdata, handles)
 % --- Executes during object creation, after setting all properties.
 function flight_corridor_width_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to flight_corridor_width (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+
+
+function chord_length_at_hub_Callback(hObject, eventdata, handles)
+% hObject    handle to chord_length_at_hub (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of chord_length_at_hub as text
+%        str2double(get(hObject,'String')) returns contents of chord_length_at_hub as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function chord_length_at_hub_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to chord_length_at_hub (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
