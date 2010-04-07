@@ -11,8 +11,8 @@ cdf = [cdf_sample' gamcdf(cdf_sample,a,b)'];
 
 figure
 cdfplot(data);
-figure
+% figure
 hold on
-plot(cdf_sample', gamcdf(cdf_sample,a,b)')
+plot(cdf_sample', gamcdf(cdf_sample,a,b)','r')
 
 [h,p,ksstat,cv] = kstest(data, cdf, 0.05)
