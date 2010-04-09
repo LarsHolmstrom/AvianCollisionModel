@@ -38,23 +38,48 @@
 % theta = 2*pi*rand(1,50);
 % rose(theta,16)
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Start Flight Heights
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 load flight_heights
 figure;
+maxval = 800;
+evaluationPoints = 1:maxval;
+subplot(2,1,1)
 hist(flight_heights,20);
 h = findobj(gca,'Type','patch');
 set(h,'FaceColor',[0.7 0.7 0.7],'EdgeColor',[0.7 0.7 0.7])
 
-xlim([0 1000])
+xlim([0 maxval])
 [a b] = gamfit(flight_heights);
-p = gampdf(1:0.1:1000,a(1),a(2));
+p = gampdf(evaluationPoints,a(1),a(2));
 % pinv = gamcdf([99.95 130.5 125],a(1),a(2));
 % figure;
 hold on
-ph = plot(1:0.1:1000,8*p/max(p),'r')
+ph = plot(evaluationPoints,8*p/max(p),'r')
 set(ph,'LineWidth',3);
 xlabel('Bird Height (m)');
 ylabel('n')
 legend({'Observed Data','Gamma Fit'})
+
+subplot(2,1,2)
+hold on
+p1 = plot(evaluationPoints', gamcdf(evaluationPoints,a(1),a(2))','r');
+set(p1,'LineWidth',3)
+p2 = cdfplot(flight_heights);
+set(p2,'LineWidth',3)
+title('');
+xlabel('Bird Height (m)');
+ylabel('CDF');
+legend({'Gamma CDF','Observed CDF'});
+PrintFigure('GammaFitTest','png',5,4);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% End Flight Heights
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 
 [bird_speed_pdf ...
  bird_direction_pdf ...
