@@ -58,21 +58,22 @@ p = gampdf(evaluationPoints,a(1),a(2));
 % figure;
 hold on
 ph = plot(evaluationPoints,8*p/max(p),'r')
-set(ph,'LineWidth',3);
-xlabel('Bird Height (m)');
+set(ph,'LineWidth',2);
+% xlabel('Bird Height (m)');
+title('A')
 ylabel('n')
 legend({'Observed Data','Gamma Fit'})
 
 subplot(2,1,2)
 hold on
 p1 = plot(evaluationPoints', gamcdf(evaluationPoints,a(1),a(2))','r');
-set(p1,'LineWidth',3)
+set(p1,'LineWidth',2)
 p2 = cdfplot(flight_heights);
-set(p2,'LineWidth',3)
-title('');
+set(p2,'LineWidth',2)
+title('B');
 xlabel('Bird Height (m)');
 ylabel('CDF');
-legend({'Gamma CDF','Observed CDF'});
+legend({'Gamma CDF','Observed CDF'},'location','SE');
 PrintFigure('GammaFitTest','png',5,4);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % End Flight Heights
