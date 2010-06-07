@@ -22,7 +22,7 @@ LatitudeLongitudeDistance(map_bound_top_left_lat,map_bound_top_left_lon,map_boun
 sqrt(3000^2 + 3000^2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Create a KML file with the bounding box in it
+% Create a Google Earth KML file with the bounding box in it
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 google_earth_box = ge_box(map_bound_top_left_lon,...
                           map_bound_bottom_right_lon,...
@@ -38,7 +38,7 @@ ge_output([kmlTargetDir '/' kmlFileName],google_earth_box,'name',kmlFileName);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Load image in and convert to .mat format
+% Load image generated in Google Earth using the above KML file and convert to .mat format
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 [img,map] = imread('Map_Cropped.jpg');
@@ -50,38 +50,69 @@ save Map_Cropped img
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Determine the coordinates of the turbines, in meters, relative to the bottom left (0,0)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 778679	2280554
+% 778632	2280296
+% 778699	2280102
+% 778707	2279888
+% 778725	2279694
+% 778767	2279492
+% 778795	2279275
+% 778857	2279065
+% 779464	2280315
+% 779481	2280106
+% 779535	2279907
+% 779608	2279725
+% 779565	2279456
+% 779574	2279283
+% 779634	2279065
+
+GE_X = [778679 778632 778699 778707 778725 778767 778795 778857 779464 779481 779535 779608 779565 779574 779634];
+GE_Y = [2280554 2280296 2280102 2279888 2279694 2279492 2279275 2279065 2280315 2280106 2279907 2279725 2279456 2279283 2279065];
+Siemens_X = [778679 778632 778699 778707 778725 778767 778795 778857 779464 779481 779535 779560 779565 779574 779634];
+Siemens_Y = [2280554 2280296 2280102 2279888 2279694 2279492 2279275 2279065 2280315 2280106 2279907 2279700 2279490 2279283 2279065];
+UTM_Zone = ['04 N'; '04 N'; '04 N'; '04 N'; '04 N'; '04 N'; '04 N'; '04 N'; '04 N'; '04 N'; '04 N'; '04 N'; '04 N'; '04 N'; '04 N'];
+
+[GE_lon, GE_lat] = utm2deg(GE_X, GE_Y, UTM_Zone);
+[Siemens_lon, Siemens_lat] = utm2deg(Siemens_X, Siemens_Y, UTM_Zone);
+
+for i=1:15
+    GE_tower(i).lon = GE_lon(i);
+    GE_tower(i).lat = GE_lat(i);
+    Siemens_tower(i).lon = Siemens_lon(i);
+    Siemens_tower(i).lat = Siemens_lat(i);
+end
 
 % The latitude and longitude values were obtained from the awahi documentation
-tower(1).lon = -156.326295;
-tower(1).lat = 20.6034832;
-tower(2).lon = -156.326785;
-tower(2).lat = 20.60116;
-tower(3).lon = -156.326174;
-tower(3).lat = 20.5993976;
-tower(4).lon = -156.326131;
-tower(4).lat = 20.597464;
-tower(5).lon = -156.325988;
-tower(5).lat = 20.5957088;
-tower(6).lon = -156.325616;
-tower(6).lat = 20.5938827;
-tower(7).lon = -156.325381;
-tower(7).lat = 20.5919196;
-tower(8).lon = -156.324825;
-tower(8).lat = 20.5900133;
-tower(9).lon = -156.318806;
-tower(9).lat = 20.6012061;
-tower(10).lon = -156.318676;
-tower(10).lat = 20.599318;
-tower(11).lon = -156.318187;
-tower(11).lat = 20.5975101;
-tower(12).lon = -156.317515;
-tower(12).lat = 20.5958626;
-tower(13).lon = -156.317976;
-tower(13).lat = 20.593438;
-tower(14).lon = -156.317919;
-tower(14).lat = 20.5918711;
-tower(15).lon = -156.317371;
-tower(15).lat = 20.5898943;
+% tower(1).lon = -156.326295;
+% tower(1).lat = 20.6034832;
+% tower(2).lon = -156.326785;
+% tower(2).lat = 20.60116;
+% tower(3).lon = -156.326174;
+% tower(3).lat = 20.5993976;
+% tower(4).lon = -156.326131;
+% tower(4).lat = 20.597464;
+% tower(5).lon = -156.325988;
+% tower(5).lat = 20.5957088;
+% tower(6).lon = -156.325616;
+% tower(6).lat = 20.5938827;
+% tower(7).lon = -156.325381;
+% tower(7).lat = 20.5919196;
+% tower(8).lon = -156.324825;
+% tower(8).lat = 20.5900133;
+% tower(9).lon = -156.318806;
+% tower(9).lat = 20.6012061;
+% tower(10).lon = -156.318676;
+% tower(10).lat = 20.599318;
+% tower(11).lon = -156.318187;
+% tower(11).lat = 20.5975101;
+% tower(12).lon = -156.317515;
+% tower(12).lat = 20.5958626;
+% tower(13).lon = -156.317976;
+% tower(13).lat = 20.593438;
+% tower(14).lon = -156.317919;
+% tower(14).lat = 20.5918711;
+% tower(15).lon = -156.317371;
+% tower(15).lat = 20.5898943;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set up the specification structures needed to drive the simulation
@@ -145,6 +176,7 @@ if use_ge_configuration_only % This is the same as the GE 1.5 SE configuration b
     tower_layout = 1:15;
 end
 
+% Add the 
 jTower = 0;
 for iTower = tower_layout
     jTower = jTower + 1;
@@ -197,8 +229,6 @@ else switch turbineType
     otherwise error('Bad turbine specification');
     end
 end
-
-
 
 % Static bird parameters
 % bird_specification.wingspan = 1;

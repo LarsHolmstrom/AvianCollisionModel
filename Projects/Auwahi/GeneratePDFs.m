@@ -42,6 +42,7 @@ for i = 1:length(wind_direction_strs)
     end
 end
 
+error('Make sure to change row indices for seasonal data')
 iSummer = 20:26;
 iFall = [1:19 27:103];
 iSummerAndFall = [iSummer iFall];
