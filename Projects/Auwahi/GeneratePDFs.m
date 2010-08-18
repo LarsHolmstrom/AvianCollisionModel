@@ -7,13 +7,23 @@ function ...
  GeneratePDFs(season, turbineType, timeOfDay)
 
 plotPDFs = ~true;
+filterFlightData = true; %Use only data that crosses the windpark for the specified turbine configuration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load and index the raw bird path data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-load rawFlightData
-load flight_heights
+% load rawFlightData
+% load flight_heights
+
+if filterFlightData
+    load FilteredFlightHeights_updated
+    flight_heights = data(:,8);
+else
+    load AllFlightHeights_updated
+    flight_heights = data(:,8);
+end
+load FilteredFlightPathData_updated
 windData; %Load the MET tower wind data
-textdata = textdata(2:end,:);
+% textdata = textdata(2:end,:);
 bird_directions = data(:,4);
 bird_speeds_mph = data(:,10);
 bird_speeds_ms = convvel(bird_speeds_mph, 'mph', 'm/s');
@@ -42,14 +52,17 @@ for i = 1:length(wind_direction_strs)
     end
 end
 
-error('Make sure to change row indices for seasonal data')
-iSummer = 20:26;
-iFall = [1:19 27:103];
-iSummerAndFall = [iSummer iFall];
+% iSummer = 20:26;
+% iFall = [1:19 27:103];
+% iSummerAndFall = [iSummer iFall];
+iSpring = 97:187;
+iFall = 1:96;
+iSpringAndFall = [iSpring iFall];
 iGE = strmatch('N',textdata(:,21));
 iSiemans = strmatch('N',textdata(:,22));
-iVestas = strmatch('N',textdata(:,23));
-hourStrs = strtok(textdata(2:end,4),':');
+% iVestas = strmatch('N',textdata(:,23));
+% hourStrs = strtok(textdata(2:end,4),':');
+hourStrs = strtok(textdata(:,4),':');
 hours = nan(1,length(hourStrs));
 for i=1:length(hours)
     hours(i) = str2num(hourStrs{i});
@@ -85,7 +98,7 @@ switch season
                            wind_speeds_11_07 ;...
                            wind_speeds_11_08 ;...
                            wind_speeds_11_09];
-    case 'springAndFall'
+    case {'springAndFall','all'}
         wind_speed_data = [wind_speeds_04_07 ;...
                            wind_speeds_04_08 ;...
                            wind_speeds_04_09 ;...
@@ -114,29 +127,27 @@ switch timeOfDay
     case 'evening'
         wind_data = wind_speed_data(:,19:22);
         workingSet = intersect(workingSet,iEvening);
-    case 'night'
-        wind_data = wind_speed_data(:,[1:3 23:24]);
-        workingSet = intersect(workingSet,iEvening);
     case 'morningAndEvening'
         wind_data = wind_speed_data(:,[5:8 19:22]);
         workingSet = intersect(workingSet,iEvening);
-        
+    case 'all'
     otherwise
         error('Badly specified timeOfDay string');
 end
 
 % Assumption of uniform distribution probably means that we should use
 % all bird paths (no filterin)
-% switch turbineType
-%     case 'ge'
-%         workingSet = intersect(workingSet,iGE);
-%     case 'siemans'
-%         workingSet = intersect(workingSet,iSiemans);
-%     case 'vestas'
-%         workingSet = intersect(workingSet,iVestas);
-%     otherwise
-%         error('Badly specified turbineType string');
-% end
+switch turbineType
+    case 'ge'
+        workingSet = intersect(workingSet,iGE);
+    case 'siemans'
+        workingSet = intersect(workingSet,iSiemans);
+    case 'vestas'
+        workingSet = intersect(workingSet,iVestas);
+    case 'all'
+    otherwise
+        error('Badly specified turbineType string');
+end
 
 [wind_speed_pdf wind_speed_intervals] = ksdensity(wind_data(:),'function','pdf');
 wind_speed.pdf = wind_speed_pdf/sum(wind_speed_pdf);
