@@ -3,9 +3,9 @@ clear variables
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simulation settings
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-plot_stuff = ~true;
-n_simulations = 1000000;
-% n_simulations = 10;
+plot_stuff = true;
+% n_simulations = 1000000;
+n_simulations = 10;
 figure_handle = nan;
 use_ge_configuration_only = ~true;
 
@@ -15,10 +15,15 @@ tower_avoidance_rate = 0.99;
 fid = fopen('SimulationResults.csv','w');
 fprintf(fid,'Turbine Type, Time of Year, Time of Day, Bird Species, 0.9, 0.95, 0.99\n');
 
-turbineTypes = {'ge','siemans'};
-timesOfYear = {'spring','fall'};
-timesOfDay = {'morning','evening'};
+turbineTypes = {'siemans23'};
+timesOfYear = {'spring'};
+timesOfDay = {'morning'};
 typesOfBird = {'petrel'};
+
+% turbineTypes = {'ge','siemans'};
+% timesOfYear = {'spring','fall'};
+% timesOfDay = {'morning','evening'};
+% typesOfBird = {'petrel'};
 
 % % turbineTypes = {'siemans','ge','vestas'};
 % turbineTypes = {'siemans'};

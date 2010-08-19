@@ -33,7 +33,9 @@ load RotorWindRelationship
 switch turbineType
     case 'ge'
         windRotorData = RotorWindRelationship{1};
-    case 'siemans'
+    case 'siemans23'
+        windRotorData = RotorWindRelationship{2};
+    case 'siemans30'
         windRotorData = RotorWindRelationship{2};
     case 'vestas'
         windRotorData = RotorWindRelationship{3};
