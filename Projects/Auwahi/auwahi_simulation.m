@@ -252,4 +252,5 @@ if plot_stuff
     fh = fill(bounding_polygon_x, bounding_polygon_y, 'r');
     dockf
     set(fh(1),'EdgeAlpha',0,'FaceAlpha',0.3);
+    PrintFigure('simulationExample','png',6.6)
 end

@@ -22,50 +22,70 @@ else
     flight_heights = data(:,8);
 end
 load FilteredFlightPathData_updated
+
+%Load the survey data
+handle = fopen('sempra_run_3_master_NA_flight_speed_removed.csv');
+%Skip the first line
+data = textscan(handle,'%s',7,'delimiter',',');
+try
+    data = textscan(handle,'%s %s %f %f %s %s %s','delimiter',',');
+catch
+    fclose(handle);
+end
+
 windData; %Load the MET tower wind data
 % textdata = textdata(2:end,:);
-bird_directions = data(:,4);
-bird_speeds_mph = data(:,10);
+% bird_directions = data(:,4);
+bird_directions = data{3};
+% bird_speeds_mph = data(:,10);
+bird_speeds_mph = data{4};
 bird_speeds_ms = convvel(bird_speeds_mph, 'mph', 'm/s');
-wind_speeds_mph = data(:,12);
-wind_speeds_ms = convvel(wind_speeds_mph, 'mph', 'm/s');
-wind_direction_strs = textdata(:,14);
-wind_directions = nan(1,length(wind_direction_strs));
-for i = 1:length(wind_direction_strs)
-    switch wind_direction_strs{i}
-        case 'N'
-            wind_directions(i) = 0;
-        case 'NE'
-            wind_directions(i) = 45;
-        case 'E'
-            wind_directions(i) = 90;
-        case 'SE'
-            wind_directions(i) = 135;
-        case 'S'
-            wind_directions(i) = 180;
-        case 'SW'
-            wind_directions(i) = 225;
-        case 'W'
-            wind_directions(i) = 270;
-        case 'NW'
-            wind_directions(i) = 315;
-    end
-end
+% wind_speeds_mph = data(:,12);
+% wind_speeds_ms = convvel(wind_speeds_mph, 'mph', 'm/s');
+% wind_direction_strs = textdata(:,14);
+% wind_directions = nan(1,length(wind_direction_strs));
+% for i = 1:length(wind_direction_strs)
+%     switch wind_direction_strs{i}
+%         case 'N'
+%             wind_directions(i) = 0;
+%         case 'NE'
+%             wind_directions(i) = 45;
+%         case 'E'
+%             wind_directions(i) = 90;
+%         case 'SE'
+%             wind_directions(i) = 135;
+%         case 'S'
+%             wind_directions(i) = 180;
+%         case 'SW'
+%             wind_directions(i) = 225;
+%         case 'W'
+%             wind_directions(i) = 270;
+%         case 'NW'
+%             wind_directions(i) = 315;
+%     end
+% end
 
 % iSummer = 20:26;
 % iFall = [1:19 27:103];
 % iSummerAndFall = [iSummer iFall];
-iSpring = 97:187;
-iFall = 1:96;
+% iSpring = 97:187;
+% iFall = 1:96;
+iFall = 1:229;
+iSpring = 230:386;
 iSpringAndFall = [iSpring iFall];
-iGE = strmatch('N',textdata(:,21));
-iSiemans = strmatch('N',textdata(:,22));
+% iGE = strmatch('N',textdata(:,21));
+iGE = strmatch('"Y"',data{5});
+% iSiemans = strmatch('N',textdata(:,22));
+iSiemans23 = strmatch('"Y"',data{6});
+iSiemans30 = strmatch('"Y"',data{7});
 % iVestas = strmatch('N',textdata(:,23));
 % hourStrs = strtok(textdata(2:end,4),':');
-hourStrs = strtok(textdata(:,4),':');
+% hourStrs = strtok(textdata(:,4),':');
+hourStrs = strtok(data{2},':');
 hours = nan(1,length(hourStrs));
 for i=1:length(hours)
-    hours(i) = str2num(hourStrs{i});
+    % Remove the leading "
+    hours(i) = str2num(hourStrs{i}(2:end));
 end
 iMorning = find(hours < 12);
 iEvening = find(hours >= 12);
@@ -140,11 +160,14 @@ end
 switch turbineType
     case 'ge'
         workingSet = intersect(workingSet,iGE);
-    case 'siemans'
-        workingSet = intersect(workingSet,iSiemans);
+    case 'siemans23'
+        workingSet = intersect(workingSet,iSiemans23);
+    case 'siemans30'
+        workingSet = intersect(workingSet,iSiemans30);
     case 'vestas'
         workingSet = intersect(workingSet,iVestas);
     case 'all'
+        workingSet = intersect(workingSet,unique([iGE' iSiemans23' iSiemans30']));
     otherwise
         error('Badly specified turbineType string');
 end
@@ -179,7 +202,8 @@ bird_speeds_ms = bird_speeds_ms(workingSet);
 % wind_pdf.f = wind_pdf.f/sum(wind_pdf.f(:));
 % wind_pdf = WrapPDF2(wind_pdf);
                    
-[bird_speed_pdf bird_speed_intervals] = ksdensity(bird_speeds_ms,'function','pdf');
+% [bird_speed_pdf bird_speed_intervals bandwidth] = ksdensity(bird_speeds_ms,'function','pdf');
+[bird_speed_pdf bird_speed_intervals bandwidth] = ksdensity(bird_speeds_ms,'function','pdf','width',1.4);
 bird_speed.pdf = bird_speed_pdf/sum(bird_speed_pdf);
 bird_speed.intervals = bird_speed_intervals;
 less_than_zero_index = find(bird_speed.intervals < 0,1,'last');
@@ -238,7 +262,7 @@ if plotPDFs
     
     figure;
     plot(fast_wind_speed.intervals, fast_wind_speed.pdf);
-    xlabel('Bird speed fast (m/s)');
+    xlabel('Wind speed fast (m/s)');
     ylabel('Density');
     xlim([min(fast_wind_speed.intervals) max(fast_wind_speed.intervals)]);
     
