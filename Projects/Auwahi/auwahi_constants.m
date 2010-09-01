@@ -91,7 +91,6 @@ end
 switch turbineType
     case 'ge' % GE 1.5 SE
         towers = GE_tower;
-%         tower_layout = 1:15;
 %         % GE 1.5 SE
 %         % Static turbine specification
 %         turbine_specification.tower_height = 64.7; % meters
@@ -125,7 +124,6 @@ switch turbineType
         turbine_specification.max_rpm = 20; %rpms
     case 'siemans23' % Siemens SWT 2.3-101
         towers = Siemens23_tower;
-%         tower_layout = 6:15;
         % Static turbine specification
         turbine_specification.tower_height = 80; % meters
         turbine_specification.turbine_radius = 50.5; % meters
@@ -142,7 +140,6 @@ switch turbineType
         turbine_specification.max_rpm = 16; %rpms
     case 'siemans30' % Siemens SWT 2.3-101
         towers = Siemens30_tower;
-%         tower_layout = 6:15;
         % Static turbine specification
         turbine_specification.tower_height = 80; % meters
         turbine_specification.turbine_radius = 50.5; % meters
@@ -159,7 +156,6 @@ switch turbineType
         turbine_specification.max_rpm = 16; %rpms
     case 'vestas' % Vestas V90
         towers = Vestas_tower;
-%         tower_layout = 8:15;
         % Static turbine specification
         turbine_specification.tower_height = 80; % meters
         turbine_specification.turbine_radius = 45; % meters
@@ -182,10 +178,7 @@ if use_ge_configuration_only % This is the same as the GE 1.5 SE configuration b
     tower_layout = 1:15;
 end
 
-% Add the 
-% jTower = 0;
 for iTower = 1:length(towers)
-%     jTower = jTower + 1;
     windfarm_specification.tower_locations(iTower).y = LatitudeLongitudeDistance(map_bound_top_left_lon,map_bound_bottom_right_lat,map_bound_top_left_lon,towers(iTower).lat);
     windfarm_specification.tower_locations(iTower).x = LatitudeLongitudeDistance(map_bound_top_left_lon,map_bound_bottom_right_lat,towers(iTower).lon,map_bound_bottom_right_lat);
 end
@@ -243,48 +236,6 @@ else switch turbineType
     otherwise error('Bad turbine specification');
     end
 end
-
-% Static bird parameters
-% bird_specification.wingspan = 1;
-% bird_specification.length = 2;
-
-survey_radius = 1500; % meters
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Simulation parameters.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
-% % Simulate normal distribution of bird paths
-% bird_path_direction_degrees_mean = 200;
-% bird_path_direction_degrees_stdev = 20;
-% 
-% % Simulate normal distribution of bird heights
-% bird_path_height_mean = 60;
-% bird_path_height_stdev = 15;
-% 
-% % Simulate normal distribution of bird heights
-% bird_speed_mean = 25;
-% bird_speed_stdev = 2;
-% 
-% % Simulate normal distribution of bird paths
-% % wind_direction_degrees_mean = 150;
-% % wind_direction_degrees_stdev = 20;
-% wind_direction_degrees_mean = 90;
-% wind_direction_degrees_stdev = 0.1;
-% 
-% % Simulate normal distribution of bird heights
-% wind_speed_mean = 10;
-% wind_speed_stdev = 2;
-
-
-
-% Need
-% Distribution of flight directions
-% Distribution of flight heights
-% Tower specifications
-%
-
-
 
 
 

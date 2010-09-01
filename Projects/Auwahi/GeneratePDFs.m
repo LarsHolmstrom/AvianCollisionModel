@@ -24,11 +24,12 @@ end
 load FilteredFlightPathData_updated
 
 %Load the survey data
-handle = fopen('sempra_run_3_master_NA_flight_speed_removed.csv');
+% handle = fopen('sempra_run_3_master_NA_flight_speed_removed.csv');
+handle = fopen('Sempra_Run_3_All_Data.csv');
 %Skip the first line
 data = textscan(handle,'%s',7,'delimiter',',');
 try
-    data = textscan(handle,'%s %s %f %f %s %s %s','delimiter',',');
+    data = textscan(handle,'%s %f %f %s %s %s %s','delimiter',',');
 catch
     fclose(handle);
 end
@@ -36,9 +37,9 @@ end
 windData; %Load the MET tower wind data
 % textdata = textdata(2:end,:);
 % bird_directions = data(:,4);
-bird_directions = data{3};
+bird_directions = data{2};
 % bird_speeds_mph = data(:,10);
-bird_speeds_mph = data{4};
+bird_speeds_mph = data{3};
 bird_speeds_ms = convvel(bird_speeds_mph, 'mph', 'm/s');
 % wind_speeds_mph = data(:,12);
 % wind_speeds_ms = convvel(wind_speeds_mph, 'mph', 'm/s');
@@ -71,25 +72,27 @@ bird_speeds_ms = convvel(bird_speeds_mph, 'mph', 'm/s');
 % iSpring = 97:187;
 % iFall = 1:96;
 iFall = 1:229;
-iSpring = 230:386;
+iSpring = 230:396;
 iSpringAndFall = [iSpring iFall];
 % iGE = strmatch('N',textdata(:,21));
-iGE = strmatch('"Y"',data{5});
+iGE = strmatch('"N"',data{5});
 % iSiemans = strmatch('N',textdata(:,22));
-iSiemans23 = strmatch('"Y"',data{6});
-iSiemans30 = strmatch('"Y"',data{7});
+iSiemans23 = strmatch('"N"',data{6});
+iSiemans30 = strmatch('"N"',data{7});
 % iVestas = strmatch('N',textdata(:,23));
 % hourStrs = strtok(textdata(2:end,4),':');
 % hourStrs = strtok(textdata(:,4),':');
-hourStrs = strtok(data{2},':');
-hours = nan(1,length(hourStrs));
-for i=1:length(hours)
-    % Remove the leading "
-    hours(i) = str2num(hourStrs{i}(2:end));
-end
-iMorning = find(hours < 12);
-iEvening = find(hours >= 12);
-iMorningAndEvening = [iMorning iEvening];
+% hourStrs = strtok(data{2},':');
+% hours = nan(1,length(hourStrs));
+% for i=1:length(hours)
+%     % Remove the leading "
+%     hours(i) = str2num(hourStrs{i}(2:end));
+% end
+% iMorning = find(hours < 12);
+% iEvening = find(hours >= 12);
+iMorning = strmatch('"M"',data{4});
+iEvening = strmatch('"E"',data{4});
+iMorningAndEvening = [iMorning' iEvening'];
 
 % Initialize by using all data
 workingSet = 1:size(bird_speeds_mph,1);
@@ -213,7 +216,8 @@ if ~isempty(less_than_zero_index)
     bird_speed.pdf = bird_speed.pdf/sum(bird_speed.pdf);
 end
 
-[bird_direction_pdf  bird_direction_intervals] = ksdensity(bird_directions,'function','pdf');
+% [bird_direction_pdf  bird_direction_intervals bandwidth] = ksdensity(bird_directions,'function','pdf');
+[bird_direction_pdf  bird_direction_intervals bandwidth] = ksdensity(bird_directions,'function','pdf','width',5);
 bird_direction.intervals = bird_direction_intervals;
 bird_direction.pdf = bird_direction_pdf/sum(bird_direction_pdf);
 bird_direction = WrapPDF(bird_direction);
