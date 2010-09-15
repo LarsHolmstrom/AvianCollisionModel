@@ -216,8 +216,8 @@ if ~isempty(less_than_zero_index)
     bird_speed.pdf = bird_speed.pdf/sum(bird_speed.pdf);
 end
 
-% [bird_direction_pdf  bird_direction_intervals bandwidth] = ksdensity(bird_directions,'function','pdf');
-[bird_direction_pdf  bird_direction_intervals bandwidth] = ksdensity(bird_directions,'function','pdf','width',5);
+[bird_direction_pdf  bird_direction_intervals bandwidth] = ksdensity(bird_directions,'function','pdf');
+% [bird_direction_pdf  bird_direction_intervals bandwidth] = ksdensity(bird_directions,'function','pdf','width',5);
 bird_direction.intervals = bird_direction_intervals;
 bird_direction.pdf = bird_direction_pdf/sum(bird_direction_pdf);
 bird_direction = WrapPDF(bird_direction);

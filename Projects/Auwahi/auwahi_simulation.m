@@ -154,8 +154,8 @@ bird_path_specification.direction_degrees = mod(DrawFromPDF(bird_direction_pdf.p
         end
     end
     
-    testSiemensPassageRate
-    contained(i_sim) = intercept_found_test;
+%     testSiemensPassageRate
+%     contained(i_sim) = intercept_found_test;
     
     bird_path_specification.intercept.x = intercept_x;
     bird_path_specification.intercept.y = intercept_y;
