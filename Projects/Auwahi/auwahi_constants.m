@@ -18,8 +18,8 @@ map_bound_bottom_right_lon = center_of_map_lon + longitude_one_and_half_km;
 map_bound_bottom_right_lat = center_of_map_lat - latitude_one_and_half_km;
 
 % These two values should be pretty close
-LatitudeLongitudeDistance(map_bound_top_left_lat,map_bound_top_left_lon,map_bound_bottom_right_lat,map_bound_bottom_right_lon);
-sqrt(3000^2 + 3000^2);
+LatitudeLongitudeDistance(map_bound_top_left_lat,map_bound_top_left_lon,map_bound_bottom_right_lat,map_bound_bottom_right_lon)
+sqrt(3000^2 + 3000^2)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Create a Google Earth KML file with the bounding box in it
@@ -100,20 +100,33 @@ turbine_specification.cut_out_wind_speed = 25; %m/s
 turbine_specification.min_rpm = 9; %rpms
 turbine_specification.max_rpm = 20; %rpms
 
-% Use the bounding box of the GE tower configuration only.
-for iTower = 1:length(GE_tower)
-    windfarm_specification.tower_locations(iTower).y = LatitudeLongitudeDistance(map_bound_top_left_lon,map_bound_bottom_right_lat,map_bound_top_left_lon,GE_tower(iTower).lat);
-    windfarm_specification.tower_locations(iTower).x = LatitudeLongitudeDistance(map_bound_top_left_lon,map_bound_bottom_right_lat,GE_tower(iTower).lon,map_bound_bottom_right_lat);
+% % Use the bounding box of the GE tower configuration only.
+% for iTower = 1:length(GE_tower)
+%     windfarm_specification.tower_locations(iTower).y = LatitudeLongitudeDistance(map_bound_top_left_lon,map_bound_bottom_right_lat,map_bound_top_left_lon,GE_tower(iTower).lat);
+%     windfarm_specification.tower_locations(iTower).x = LatitudeLongitudeDistance(map_bound_top_left_lon,map_bound_bottom_right_lat,GE_tower(iTower).lon,map_bound_bottom_right_lat);
+% end
+% 
+% bounding_polygon_x = [[windfarm_specification.tower_locations(1:7).x] - 1.5*turbine_specification.turbine_radius ...
+%                       [windfarm_specification.tower_locations(fliplr(8:15)).x] + 1.5*turbine_specification.turbine_radius ...
+%                       [windfarm_specification.tower_locations(1).x] - 1.5*turbine_specification.turbine_radius];
+% bounding_polygon_y = [[windfarm_specification.tower_locations(1).y] + 1.5*turbine_specification.turbine_radius ...
+%                       [windfarm_specification.tower_locations(2:6).y] ...
+%                       [windfarm_specification.tower_locations([7 15]).y] - 1.5*turbine_specification.turbine_radius ...
+%                       [windfarm_specification.tower_locations(fliplr(9:14)).y] ...
+%                       [windfarm_specification.tower_locations([8 1]).y] + 1.5*turbine_specification.turbine_radius]; 
+     
+
+
+% Use a circular bounding area 1.5km is circumference.
+bounding_polygon_x = [];
+bounding_polygon_y = [];
+for angle = linspace(0,2*pi,100)
+    bounding_polygon_y = [bounding_polygon_y LatitudeLongitudeDistance(map_bound_top_left_lat,map_bound_top_left_lon,map_bound_top_left_lat,center_of_map_lon+sin(angle)*longitude_one_and_half_km)];
+    bounding_polygon_x = [bounding_polygon_x LatitudeLongitudeDistance(map_bound_top_left_lat,map_bound_top_left_lon,center_of_map_lat+cos(angle)*latitude_one_and_half_km,map_bound_top_left_lon)];
 end
 
-bounding_polygon_x = [[windfarm_specification.tower_locations(1:7).x] - 1.5*turbine_specification.turbine_radius ...
-                      [windfarm_specification.tower_locations(fliplr(8:15)).x] + 1.5*turbine_specification.turbine_radius ...
-                      [windfarm_specification.tower_locations(1).x] - 1.5*turbine_specification.turbine_radius];
-bounding_polygon_y = [[windfarm_specification.tower_locations(1).y] + 1.5*turbine_specification.turbine_radius ...
-                      [windfarm_specification.tower_locations(2:6).y] ...
-                      [windfarm_specification.tower_locations([7 15]).y] - 1.5*turbine_specification.turbine_radius ...
-                      [windfarm_specification.tower_locations(fliplr(9:14)).y] ...
-                      [windfarm_specification.tower_locations([8 1]).y] + 1.5*turbine_specification.turbine_radius]; 
+
+                                    
                   
 clear windfarm_specification
 

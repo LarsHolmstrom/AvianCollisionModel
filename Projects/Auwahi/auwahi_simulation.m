@@ -96,8 +96,9 @@ for i_sim = 1:n_simulations
     end
     
     % Simulation bird path parameters
-bird_path_specification.direction_degrees = mod(DrawFromPDF(bird_direction_pdf.pdf,bird_direction_pdf.intervals)+180,360);
+    %The next line is the right way to do it, but the one below is kept for consistency between runs
 %     bird_path_specification.direction_degrees = DrawFromPDF(bird_direction_pdf.pdf,bird_direction_pdf.intervals);
+bird_path_specification.direction_degrees = mod(DrawFromPDF(bird_direction_pdf.pdf,bird_direction_pdf.intervals)+180,360);
     bird_path_specification.height = DrawFromPDF(bird_height_pdf.pdf,bird_height_pdf.intervals);
     bird_path_specification.speed = DrawFromPDF(bird_speed_pdf.pdf,bird_speed_pdf.intervals);
     

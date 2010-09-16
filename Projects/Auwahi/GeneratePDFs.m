@@ -159,21 +159,23 @@ switch timeOfDay
 end
 
 % Assumption of uniform distribution probably means that we should use
-% all bird paths (no filterin)
-switch turbineType
-    case 'ge'
-        workingSet = intersect(workingSet,iGE);
-    case 'siemans23'
-        workingSet = intersect(workingSet,iSiemans23);
-    case 'siemans30'
-        workingSet = intersect(workingSet,iSiemans30);
-    case 'vestas'
-        workingSet = intersect(workingSet,iVestas);
-    case 'all'
-        workingSet = intersect(workingSet,unique([iGE' iSiemans23' iSiemans30']));
-    otherwise
-        error('Badly specified turbineType string');
-end
+% all bird paths (no filtering)
+% switch turbineType
+%     case 'ge'
+%         workingSet = intersect(workingSet,iGE);
+%     case 'siemans23'
+%         workingSet = intersect(workingSet,iSiemans23);
+%     case 'siemans30'
+%         workingSet = intersect(workingSet,iSiemans30);
+%     case 'vestas'
+%         workingSet = intersect(workingSet,iVestas);
+%     case 'intersect'
+%         workingSet = intersect(workingSet,unique([iGE' iSiemans23' iSiemans30']));
+%     case 'all'
+%         foo = 1;
+%     otherwise
+%         error('Badly specified turbineType string');
+% end
 
 [wind_speed_pdf wind_speed_intervals] = ksdensity(wind_data(:),'function','pdf');
 wind_speed.pdf = wind_speed_pdf/sum(wind_speed_pdf);

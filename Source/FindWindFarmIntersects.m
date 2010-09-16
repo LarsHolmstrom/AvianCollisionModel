@@ -21,6 +21,8 @@ x_max_boundary = nan;
 y_max_boundary = nan;
 figure_handle = nan;
 
+plot_compass = false;
+
 % Optional arguments
 plot_stuff = true;
 image_file = 'ground_image.mat';
@@ -257,8 +259,8 @@ if plot_stuff
         set(gca,'YDir','normal');
         title('Windfarm Layout and Dimensions');
         axis equal
-        xlim([x_min_boundary x_max_boundary]);
-        ylim([y_min_boundary y_max_boundary]);
+%         xlim([x_min_boundary x_max_boundary]);
+%         ylim([y_min_boundary y_max_boundary]);
         xlabel('Meters');
         ylabel('Meters');
 
@@ -291,7 +293,7 @@ if plot_stuff
 
     
     % Plot the compass
-    if new_figure
+    if new_figure && plot_compass
         compassPlotHandle = axes('Position',[.2 .7 .2 .2],'Visible','off');
         set(compassPlotHandle,'xtick',[],'ytick',[])
 
